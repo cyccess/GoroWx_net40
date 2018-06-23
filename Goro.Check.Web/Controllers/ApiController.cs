@@ -41,12 +41,13 @@ namespace Goro.Check.Web.Controllers
             return Json(model);
         }
 
-        public ActionResult SalesReturnNotice(int page = 1)
+        public ActionResult SalesReturnNotice(string phoneNumber, int page = 1)
         {
-            var res = apiService.GetSalesReturnNotice("13011111111", page);
+            var res = apiService.GetSalesReturnNotice(phoneNumber, page);
 
             var model = new ReturnModel();
-            model.Code = 100;
+            if (res.Count == 0) model.Code = 0;
+
             model.Data = res;
 
             return Json(model, JsonRequestBehavior.AllowGet);
@@ -55,7 +56,7 @@ namespace Goro.Check.Web.Controllers
 
         public ActionResult SalesReturnNoticeDetail(string phoneNumber, string fBillNo)
         {
-            var res = apiService.GetSalesReturnNoticeDetail("13011111111", fBillNo);
+            var res = apiService.GetSalesReturnNoticeDetail(phoneNumber, fBillNo);
 
             var model = new ReturnModel();
             model.Code = 100;
@@ -76,7 +77,7 @@ namespace Goro.Check.Web.Controllers
         public ActionResult UpdateSalesReturn(string userGroupNumber, string phoneNumber, string billNo, string result, string reason)
         {
             reason = reason ?? "";
-            var res = apiService.UpdateSalesReturn("001", "13022222222", billNo, result, reason);
+            var res = apiService.UpdateSalesReturn(userGroupNumber, phoneNumber, billNo, result, reason);
 
             var model = new ReturnModel();
             model.Code = 100;
@@ -86,20 +87,20 @@ namespace Goro.Check.Web.Controllers
         }
 
 
-        public ActionResult SalesOrders(int page = 1)
+        public ActionResult SalesOrders(string phoneNumber, int page = 1)
         {
-            var res = apiService.GetSalesOrderList("13044444444", page);
+            var res = apiService.GetSalesOrderList(phoneNumber, page);
 
             var model = new ReturnModel();
-            model.Code = 100;
+            if (res.Count == 0) model.Code = 0;
             model.Data = res;
 
             return Json(model);
         }
 
-        public ActionResult SalesOrderDetail(string phoneNumber, string billTypeNumber, string fBillNo)
+        public ActionResult SalesOrderDetail(string phoneNumber, string fBillNo)
         {
-            var res = apiService.GetSalesOrderDetail("13033333333", fBillNo);
+            var res = apiService.GetSalesOrderDetail(phoneNumber, fBillNo);
 
             var model = new ReturnModel();
             model.Code = 100;

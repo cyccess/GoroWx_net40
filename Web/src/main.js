@@ -8,7 +8,7 @@ import App from './App'
 import routes from './router/index'
 import VueScroller from 'vue-scroller'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import {getStore} from './utils'
+import identityUser from  './identityUser'
 
 import {AjaxPlugin, AlertPlugin, ConfirmPlugin, ToastPlugin} from 'vux'
 
@@ -60,8 +60,7 @@ AjaxPlugin.$http.interceptors.response.use(response => {
 });
 
 router.beforeEach((to, from, next) => {
-  let sid = getStore("sid");
-  if (to.meta.requiresAuth && !sid) {
+  if (to.meta.requiresAuth && !identityUser) {
     location.href = '/Authorize'
     // next({
     //   path: '/login',

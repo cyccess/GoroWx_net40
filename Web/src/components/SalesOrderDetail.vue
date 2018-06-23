@@ -8,14 +8,14 @@
       </div>
     </div>
 
-    <div class="btn-wrapper">
+    <div class="btn-wrapper" v-if="userGroupNumber!=='004'||userGroupNumber!=='005'">
       <button @click="modalShow=true" class="btn btn-default" type="submit">不同意</button>
       <button @click="agree" class="btn btn-primary" type="submit">同意</button>
     </div>
 
-    <!--<div class="btn-wrapper">-->
-      <!--<button @click="modelReply=true" class="btn btn-primary" type="submit">回复</button>-->
-    <!--</div>-->
+    <div class="btn-wrapper" v-else>
+      <button @click="modelReply=true" class="btn btn-primary" type="submit">回复</button>
+    </div>
 
     <x-dialog v-model="modalShow" class="dialog-disagree">
       <div class="card">
@@ -23,10 +23,12 @@
           <span class="vux-close"></span>
         </div>
         <div class="card-body">
-          <h6 class="card-subtitle mb-2 text-muted">选择组</h6>
-          <div class="check-group">
-            <check-icon :value.sync="isMe">工艺组</check-icon>
-            <check-icon :value.sync="isPo">供应组</check-icon>
+          <div v-if="userGroupNumber==='004'">
+            <h6 class="card-subtitle mb-2 text-muted">选择组</h6>
+            <div class="check-group">
+              <check-icon :value.sync="isMe">工艺组</check-icon>
+              <check-icon :value.sync="isPo">供应组</check-icon>
+            </div>
           </div>
 
           <h6 class="card-subtitle mb-2 text-muted">不同意原因</h6>
@@ -59,7 +61,7 @@
 
 <script>
   import {XDialog, CheckIcon} from 'vux'
-
+  import identityUser from '../identityUser'
   export default {
     components: {
       XDialog, CheckIcon
@@ -73,8 +75,8 @@
         model: {},
         field: [],
         isMe: false, //工艺是否审核
-        isPo: false  //供应是否审核
-
+        isPo: false,  //供应是否审核
+        userGroupNumber: identityUser.fUserGroupNumber
       }
     },
     created() {
@@ -83,7 +85,7 @@
     },
     methods: {
       async getData() {
-        let res = await this.$http.post('/api/SalesOrderDetail', {fBillNo: this.billNo});
+        let res = await this.$http.post('/api/SalesOrderDetail', {phoneNumber: identityUser.fPhoneNumber, fBillNo: this.billNo});
 
         this.model = res.data.order[0];
         this.field = res.data.field
@@ -98,12 +100,14 @@
       async update(result) {
         let args = {
           billNo: this.billNo,
+          phoneNumber: identityUser.fPhoneNumber,
+          userGroupNumber: this.userGroupNumber,
           result: result,
           reason: this.reason
         };
 
         // 工艺/供应是否审核
-        if (true) {
+        if (this.userGroupNumber === "004") {
           args.isMe = this.isMe ? "1" : "0";
           args.isPo = this.isPo ? "1" : "0";
         }

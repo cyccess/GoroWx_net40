@@ -33,7 +33,7 @@
 
 <script>
   import {XDialog} from 'vux'
-
+  import identityUser from '../identityUser'
   export default {
     components: {
       XDialog
@@ -53,7 +53,7 @@
     },
     methods: {
       async getData() {
-        let res = await this.$http.post('/api/SalesReturnNoticeDetail', {fBillNo: this.billNo});
+        let res = await this.$http.post('/api/SalesReturnNoticeDetail', {phoneNumber: identityUser.fPhoneNumber, fBillNo: this.billNo});
 
         this.model = res.data.order[0];
         this.field = res.data.field
@@ -67,6 +67,8 @@
       },
       async update(result){
         let args = {
+          phoneNumber: identityUser.fPhoneNumber,
+          userGroupNumber: identityUser.fUserGroupNumber,
           billNo: this.billNo,
           result: result,
           reason: this.reason

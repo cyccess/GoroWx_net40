@@ -10,13 +10,13 @@ namespace Goro.Check
     [Serializable]
     public class ReturnModel
     {
-        public ReturnModel()
+        public ReturnModel(int code = 100)
         {
-            
+            this.Code = code;
         }
 
         /// <summary>
-        /// 是否成功
+        /// code  默认100，表示成功
         /// </summary>
         public int Code { get; set; }
         /// <summary>

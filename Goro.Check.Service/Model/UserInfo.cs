@@ -20,5 +20,7 @@ namespace Goro.Check.Service.Model
         public string FUserGroupNumber { get; set; }
 
         public string FUserGroupName { get; set; }
+
+        public string FUserOpenID { get; set; }
     }
 }

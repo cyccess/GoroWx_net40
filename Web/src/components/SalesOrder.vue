@@ -13,6 +13,7 @@
   </div>
 </template>
 <script>
+  import identityUser from '../identityUser'
   export default {
     data() {
       return {
@@ -34,7 +35,9 @@
           return;
         }
         this.page += 1;
-        let res = await this.$http.post('/api/SalesOrders', {page: this.page});
+
+        let agrs = {phoneNumber: identityUser.fPhoneNumber, page: this.page};
+        let res = await this.$http.post('/api/SalesOrders', agrs);
 
         if (res.code === 100) {
           if (res.data.length < 10) {

@@ -31,6 +31,7 @@ namespace Goro.Check.Service
                 FUserGroupID = u.Field<int?>(4),
                 FUserGroupNumber = u.Field<string>(5),
                 FUserGroupName = u.Field<string>(6),
+                FUserOpenID = u.Field<string>(7)
             }).FirstOrDefault();
 
             return entity;

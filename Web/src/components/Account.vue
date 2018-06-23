@@ -19,8 +19,7 @@
 </template>
 
 <script>
-  import {setStore} from '../utils'
-
+  import {setStore,removeStore} from '../utils'
   export default {
     data() {
       return {
@@ -29,39 +28,36 @@
         openId: ''
       }
     },
-    created() {
-      this.openId = this.$route.query.openId;
-      this.auth();
-    },
     methods: {
-      async auth() {
-        console.log("openid:" + this.openId);
-
+      async autoAuth() {
+        this.clearState();
         if (!this.openId) {
-
-          this.openId = 'oxz6qw-riVMn6jdrFp0tHWDl6Hh8';
-
-          // location.href = "/Authorize";
-          // return;
+          // this.openId = 'oxz6qw-riVMn6jdrFp0tHWDl6Hh8';
+          location.href = "/Authorize";
+          return;
         }
-
+        console.log("openid:" + this.openId);
         let res = await this.$http.post('/api/Login', {openId: this.openId});
         if (res.data) {
           this.setState(res.data);
         }
         else {
-          this.$vux.toast.text('登录失败！');
+          // this.$vux.toast.text('登录失败！');
         }
       },
       async onSubmit() {
+        if(this.isSubmit) return;
+
         let valid = this.validate();
         if (valid) {
+          this.isSubmit = true;
           let res = await this.$http.post('/api/UserBinding', {phoneNumber: this.mobilePhone, openId: this.openId});
           if (res.message === "OK") {
             this.setState(res.data);
           }
           else {
             this.$vux.toast.text(res.message);
+            this.isSubmit = false;
           }
         }
       },
@@ -79,8 +75,7 @@
         return true;
       },
       setState(model) {
-        setStore('sid', model.fPhoneNumber);
-        setStore('gid', model.fUserGroupNumber);
+        setStore('userinfo', model);
         let groupNo = model.fUserGroupNumber;
         if (groupNo === "001" || groupNo === "009") {
           this.$router.push('/salesReturnNotice');
@@ -88,7 +83,16 @@
         else {
           this.$router.push('/salesOrder');
         }
+      },
+      clearState(){
+        removeStore("userinfo");
       }
+    },
+    beforeRouteEnter(to,from,next){
+      next(vm => {
+        vm.openId = vm.$route.query.openId;
+        vm.autoAuth();
+      });
     }
   }
 </script>
