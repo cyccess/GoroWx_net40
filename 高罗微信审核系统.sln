@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Goro.Check.Web", "Goro.Check.Web\Goro.Check.Web.csproj", "{4108528F-EAE2-4F21-B988-54544E9A2241}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Goro.Check", "Goro.Check\Goro.Check.csproj", "{D0F91921-434C-4CE5-BC0D-E445AD1AE80F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Goro.Check.Data", "Goro.Check.Data\Goro.Check.Data.csproj", "{B66BDE72-DEE6-42C8-B4D5-63AD76039D13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Goro.Check.Service", "Goro.Check.Service\Goro.Check.Service.csproj", "{C084B7F7-CF8A-480C-8D0B-C8423DD9E917}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4108528F-EAE2-4F21-B988-54544E9A2241}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4108528F-EAE2-4F21-B988-54544E9A2241}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4108528F-EAE2-4F21-B988-54544E9A2241}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4108528F-EAE2-4F21-B988-54544E9A2241}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0F91921-434C-4CE5-BC0D-E445AD1AE80F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0F91921-434C-4CE5-BC0D-E445AD1AE80F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0F91921-434C-4CE5-BC0D-E445AD1AE80F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0F91921-434C-4CE5-BC0D-E445AD1AE80F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B66BDE72-DEE6-42C8-B4D5-63AD76039D13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B66BDE72-DEE6-42C8-B4D5-63AD76039D13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B66BDE72-DEE6-42C8-B4D5-63AD76039D13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B66BDE72-DEE6-42C8-B4D5-63AD76039D13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C084B7F7-CF8A-480C-8D0B-C8423DD9E917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C084B7F7-CF8A-480C-8D0B-C8423DD9E917}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C084B7F7-CF8A-480C-8D0B-C8423DD9E917}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C084B7F7-CF8A-480C-8D0B-C8423DD9E917}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
