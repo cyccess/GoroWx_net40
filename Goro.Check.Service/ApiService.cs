@@ -189,7 +189,7 @@ namespace Goro.Check.Service
                 cmdText = "tm_p_UpdateSalesReturnQC";
             }
 
-            LoggerHelper.Info("退货通知单审核[" + userGroupNumber + "]");
+            LoggerHelper.Info("退货通知单审核[" + userGroupNumber+ "]:"+ phoneNumber);
 
             var res = SqlHelper.ExecuteNonQuery(CommandType.StoredProcedure, cmdText, sqlParameter);
             var msg = sqlParameter[4].Value;
@@ -298,7 +298,7 @@ namespace Goro.Check.Service
                 cmdText = "tm_p_UpdateSalesOrderPO";
             }
 
-            LoggerHelper.Info("销售单审核【" + model.userGroupNumber + "】");
+            LoggerHelper.Info("销售单审核【" + model.userGroupNumber + "：" + model.phoneNumber + "】");
 
             sqlParameter.Add(new SqlParameter { ParameterName = "@Msg", Value = "", Direction = ParameterDirection.Output, Size = 100, SqlDbType = SqlDbType.NVarChar });
 

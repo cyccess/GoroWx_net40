@@ -53,7 +53,6 @@ namespace Goro.Check.Web.Controllers
             return Json(model, JsonRequestBehavior.AllowGet);
         }
 
-
         public ActionResult SalesReturnNoticeDetail(string phoneNumber, string fBillNo)
         {
             var res = apiService.GetSalesReturnNoticeDetail(phoneNumber, fBillNo);
@@ -66,7 +65,7 @@ namespace Goro.Check.Web.Controllers
         }
 
         /// <summary>
-        /// 
+        /// 退货单审核
         /// </summary>
         /// <param name="userGroupNumber"></param>
         /// <param name="phoneNumber"></param>
@@ -86,7 +85,12 @@ namespace Goro.Check.Web.Controllers
             return Json(model);
         }
 
-
+        /// <summary>
+        /// 销售订单
+        /// </summary>
+        /// <param name="phoneNumber"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
         public ActionResult SalesOrders(string phoneNumber, int page = 1)
         {
             var res = apiService.GetSalesOrderList(phoneNumber, page);
@@ -109,6 +113,11 @@ namespace Goro.Check.Web.Controllers
             return Json(model);
         }
 
+        /// <summary>
+        /// 销售订单审核
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         public ActionResult UpdateSalesOrder(SalesOrderViewModel model)
         {
             model.reason = model.reason ?? "";

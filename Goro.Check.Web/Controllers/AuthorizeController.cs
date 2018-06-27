@@ -26,7 +26,7 @@ namespace Goro.Check.Web.Controllers
 
             var token = HttpHelper.Get<WechatToken>(url);
 
-            LoggerHelper.Info("json:" + token.openid);
+            LoggerHelper.Info("openid:" + token.openid);
             Cache.CacheService.Set(token.openid, token);
 
             string redirectUrl = "/#/?openId=" + token.openid;
