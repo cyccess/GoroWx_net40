@@ -34,9 +34,9 @@ namespace Goro.Check.Service
                 FUserOpenID = u.Field<string>(7)
             }).FirstOrDefault();
 
-            entity.FEmpName = "总经理组";
-            entity.FUserGroupNumber = "002";
-            entity.FPhoneNumber = "13044444444";
+            //entity.FEmpName = "总经理组";
+            //entity.FUserGroupNumber = "002";
+            //entity.FPhoneNumber = "13044444444";
 
             return entity;
         }
