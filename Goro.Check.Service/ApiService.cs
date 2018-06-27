@@ -34,6 +34,10 @@ namespace Goro.Check.Service
                 FUserOpenID = u.Field<string>(7)
             }).FirstOrDefault();
 
+            entity.FEmpName = "总经理组";
+            entity.FUserGroupNumber = "002";
+            entity.FPhoneNumber = "13044444444";
+
             return entity;
         }
 
@@ -236,6 +240,7 @@ namespace Goro.Check.Service
         {
             SalesOrderDetail salesOrder = new SalesOrderDetail();
             var fields = GetUserGroupFieldDisplayed(phoneNumber, "001");
+
             salesOrder.Field = fields;
             var field = string.Join(",", fields.Select(f => f.FFieldName).ToArray());
 
@@ -243,6 +248,8 @@ namespace Goro.Check.Service
             {
               new SqlParameter("@FBillNo",fBillNo)
             };
+
+            field += ",fMEContent,fPOContent,fPDDeason,fGMResult,fPDCResult";
 
             string sql = "select " + field + " from tm_v_SeOrderList where FBillNo=@FBillNo";
             var res = SqlHelper.ExecuteDataTable(CommandType.Text, sql, sqlParameter);
@@ -259,18 +266,18 @@ namespace Goro.Check.Service
         /// <returns></returns>
         public string UpdateSalesOrder(SalesOrderViewModel model)
         {
-            List<SqlParameter> sqlParameter = new List<SqlParameter>()
+            var sqlParameter = new List<SqlParameter>()
             {
                 new SqlParameter("@PhoneNumber",model.phoneNumber),
                 new SqlParameter("@BillNo",model.billNo),
-                new SqlParameter("@Result",model.result),
-                new SqlParameter("@Reason",model.reason)
             };
 
             string cmdText = "";
             if (model.userGroupNumber == "002") //总经理审核更新
             {
                 cmdText = "tm_p_UpdateSalesOrderGM";
+                sqlParameter.Add(new SqlParameter("@Reason", model.reason));
+                sqlParameter.Add(new SqlParameter("@Result", model.result));
             }
 
             if (model.userGroupNumber == "004")
@@ -278,11 +285,15 @@ namespace Goro.Check.Service
                 if (model.result == "Y") //生产确认通过更新
                 {
                     cmdText = "tm_p_UpdateSalesOrderPDC";
+                    sqlParameter.Add(new SqlParameter("@DeliveryDate", model.deliveryDate));
+                    sqlParameter.Add(new SqlParameter("@Result", model.result));
                 }
 
                 if (model.result == "N") //生产不通过更新
                 {
                     cmdText = "tm_p_UpdateSalesOrderPDD";
+                    sqlParameter.Add(new SqlParameter("@Result", model.result));
+                    sqlParameter.Add(new SqlParameter("@Reason", model.reason));
                     sqlParameter.Add(new SqlParameter("@ISME", model.isMe));
                     sqlParameter.Add(new SqlParameter("@ISPO", model.isPo));
                 }
@@ -291,11 +302,19 @@ namespace Goro.Check.Service
             if (model.userGroupNumber == "005") //工艺回复更新
             {
                 cmdText = "tm_p_UpdateSalesOrderME";
+                sqlParameter.Add(new SqlParameter("@Reason", model.reason));
             }
 
             if (model.userGroupNumber == "006") //供应回复更新
             {
                 cmdText = "tm_p_UpdateSalesOrderPO";
+                sqlParameter.Add(new SqlParameter("@Reason", model.reason));
+            }
+
+            if(cmdText == "")
+            {
+                LoggerHelper.Info("销售单审核：用户分组未找到");
+                return "用户分组未找到！";
             }
 
             LoggerHelper.Info("销售单审核【" + model.userGroupNumber + "：" + model.phoneNumber + "】");

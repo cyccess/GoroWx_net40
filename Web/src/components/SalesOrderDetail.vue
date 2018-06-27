@@ -2,21 +2,48 @@
   <div class="sales-box">
 
     <div class="orderInfo">
-      <div class="info-title">销售订单详情</div>
+      <div class="info-title">
+        <span>销售订单审核 - {{userName}}</span>
+        <div v-if="userGroupNumber==='002'&&model['fGMResult']" class="orderState">
+          <div>状态：{{model['fGMResult']}}</div>
+        </div>
+        <div v-if="userGroupNumber!=='002'&&model['fPDCResult']" class="orderState">
+          <div>状态：{{model['fPDCResult']}}</div>
+        </div>
+      </div>
+
       <div class="info-text" v-for="(item,index) in field" :key="index" :class="[index===2 ? 'vux-1px-b line' : '']">
         <span>{{item.fFieldDescription}}：{{model[item.fFieldName]}}</span>
       </div>
+
+      <!--生产显示回复-->
+      <div class="info-text" v-if="userGroupNumber==='004'">
+        <span>工艺回复：{{model['fMEContent']}}</span><br>
+        <span>供应回复：{{model['fPOContent']}}</span>
+      </div>
+
+      <!--工艺/供应显示生产不确认原因-->
+      <div class="info-text" v-if="userGroupNumber==='005'||userGroupNumber==='006'">生产不确认原因：{{model['fPDDeason']}}</div>
     </div>
 
-    <div class="btn-wrapper" v-if="userGroupNumber!=='004'||userGroupNumber!=='005'">
+    <!--总经理组审核按钮-->
+    <div class="btn-wrapper" v-if="userGroupNumber==='002'">
       <button @click="modalShow=true" class="btn btn-default" type="submit">不同意</button>
       <button @click="agree" class="btn btn-primary" type="submit">同意</button>
     </div>
 
-    <div class="btn-wrapper" v-else>
+    <!--生产确认/不确认按钮-->
+    <div class="btn-wrapper" v-else-if="userGroupNumber==='004'">
+      <button @click="modalShow=true" class="btn btn-default" type="submit">不确认</button>
+      <button @click="agree" class="btn btn-primary" type="submit">确认</button>
+    </div>
+
+    <!--工艺/供应回复按钮-->
+    <div class="btn-wrapper" v-if="userGroupNumber==='005'||userGroupNumber==='006'">
       <button @click="modelReply=true" class="btn btn-primary" type="submit">回复</button>
     </div>
 
+    <!--总经理组、生产审核对话框-->
     <x-dialog v-model="modalShow" class="dialog-disagree">
       <div class="card">
         <div class="dialog-close" @click="modalShow=false">
@@ -41,6 +68,7 @@
       </div>
     </x-dialog>
 
+    <!--回复对话框-->
     <x-dialog v-model="modelReply" class="dialog-reply">
       <div class="card">
         <div class="dialog-close" @click="modelReply=false">
@@ -50,8 +78,25 @@
           <h6 class="card-subtitle mb-2 text-muted">回复内容</h6>
           <textarea class="form-control" v-model="reason"></textarea>
           <div class="btn-box">
-            <button @click="disagree" type="button" class="btn btn-sm btn-primary">确定</button>
+            <button @click="reply" type="button" class="btn btn-sm btn-primary">确定</button>
             <button @click="modelReply=false" type="button" class="btn btn-sm btn-default">取消</button>
+          </div>
+        </div>
+      </div>
+    </x-dialog>
+
+    <!--交期选择对话框-->
+    <x-dialog v-model="modelDelivery">
+      <div class="card">
+        <div class="dialog-close" @click="modelDelivery=false">
+          <span class="vux-close"></span>
+        </div>
+        <div class="card-body">
+          <h6 class="card-subtitle mb-2 text-muted">交期时间</h6>
+          <datetime-view v-model="deliveryDate" ref="datetime"></datetime-view>
+          <div class="btn-box">
+            <button @click="proAgree" type="button" class="btn btn-sm btn-primary">确定</button>
+            <button @click="modelDelivery=false" type="button" class="btn btn-sm btn-default">取消</button>
           </div>
         </div>
       </div>
@@ -60,53 +105,78 @@
 </template>
 
 <script>
-  import {XDialog, CheckIcon} from 'vux'
-  import identityUser from '../identityUser'
+  import {XDialog, CheckIcon, DatetimeView} from 'vux'
+  import {getUserinfo} from '../identityUser'
+
   export default {
     components: {
-      XDialog, CheckIcon
+      XDialog, CheckIcon, DatetimeView
     },
     data() {
       return {
+        userInfo: {},
         modalShow: false,
-        modelReply:false,
+        modelReply: false,
+        modelDelivery: false,
         reason: '',
         billNo: '',
         model: {},
         field: [],
+        deliveryDate: '',//交期
         isMe: false, //工艺是否审核
         isPo: false,  //供应是否审核
-        userGroupNumber: identityUser.fUserGroupNumber
+        userGroupNumber: '',
+        userName: ''
       }
     },
+
     created() {
       this.billNo = this.$route.query.billNo;
+      let now = new Date();
+      this.deliveryDate = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
+      this.userInfo = getUserinfo();
+      this.userGroupNumber = this.userInfo.fUserGroupNumber;
+      this.userName = this.userInfo.fEmpName;
       this.getData();
     },
     methods: {
       async getData() {
-        let res = await this.$http.post('/api/SalesOrderDetail', {phoneNumber: identityUser.fPhoneNumber, fBillNo: this.billNo});
+        let res = await this.$http.post('/api/SalesOrderDetail', {phoneNumber: this.userInfo.fPhoneNumber, fBillNo: this.billNo});
 
         this.model = res.data.order[0];
         this.field = res.data.field
       },
-      async agree() {
+      proAgree() {
+        this.modelDelivery = false;
+        // 生产确认
         this.update("Y");
+      },
+      async agree() {
+        if (this.userGroupNumber === '004') {
+          this.modelDelivery = true;
+          return;
+        }
+        await this.update("Y");
+      },
+      async reply() {
+        this.modelReply = false;
+        await this.update("");
       },
       async disagree() {
         this.modalShow = false;
-        this.update("N");
+        await this.update("N");
       },
       async update(result) {
         let args = {
           billNo: this.billNo,
-          phoneNumber: identityUser.fPhoneNumber,
+          phoneNumber: this.userInfo.fPhoneNumber,
           userGroupNumber: this.userGroupNumber,
           result: result,
-          reason: this.reason
+          reason: this.reason,
+          deliveryDate: this.deliveryDate
         };
 
-        // 工艺/供应是否审核
+        //生产不确认，工艺/供应是否审核
         if (this.userGroupNumber === "004") {
           args.isMe = this.isMe ? "1" : "0";
           args.isPo = this.isPo ? "1" : "0";
@@ -123,12 +193,17 @@
             message = "操作成功！";
           }
         }
+
+        if (this.userGroupNumber === '005' || this.userGroupNumber === '006') {
+          message = `销售订单[${this.billNo}]<br>回复完成！`
+        }
+
         let vm = this;
         this.$vux.alert.show({
           title: '提示',
           content: message,
           onHide() {
-            vm.$router.push({path: '/salesReturnNotice'});
+            // vm.$router.push({path: '/salesOrder'});
           }
         });
       }
@@ -166,12 +241,17 @@
   }
 
   .info-title {
+    display: flex;
     font-weight: 600;
     margin-bottom: .5rem;
+    .orderState {
+      flex: 1;
+      text-align: right;
+    }
   }
 
   .info-text {
-    line-height: 1.5rem;
+    line-height: 1.65rem;
   }
 
   .line {

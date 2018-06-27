@@ -1,11 +1,17 @@
-import {getStore} from  './utils';
+import {getStore, setStore} from './utils';
 
-let userInfo = null;
-let user = getStore("userinfo");
-if(user){
-  userInfo = JSON.parse(user);
-}
+const USER_INFO = 'userinfo';
 
-console.log(userInfo)
+export const getUserinfo = () => {
+  let userInfo = null;
+  let user = getStore(USER_INFO);
+  if (user) {
+    userInfo = JSON.parse(user);
+  }
+  console.log(userInfo)
+  return userInfo;
+};
 
-export default userInfo;
+export const setUserinfo = (model) => {
+  setStore(USER_INFO, JSON.stringify(model));
+};

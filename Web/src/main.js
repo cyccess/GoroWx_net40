@@ -7,18 +7,19 @@ import VueRouter from 'vue-router'
 import App from './App'
 import routes from './router/index'
 import VueScroller from 'vue-scroller'
+import VueCookies from 'vue-cookies'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import identityUser from  './identityUser'
+import identityUser from './identityUser'
 
 import {AjaxPlugin, AlertPlugin, ConfirmPlugin, ToastPlugin} from 'vux'
 
 Vue.use(VueRouter);
-Vue.use(AjaxPlugin);
 Vue.use(VueScroller);
+Vue.use(VueCookies);
+Vue.use(AjaxPlugin);
 Vue.use(AlertPlugin);
 Vue.use(ConfirmPlugin);
 Vue.use(ToastPlugin);
-
 
 const router = new VueRouter({
   routes
@@ -60,12 +61,13 @@ AjaxPlugin.$http.interceptors.response.use(response => {
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth && !identityUser) {
-    location.href = '/Authorize'
-    // next({
-    //   path: '/login',
-    //   query: {redirect: to.fullPath}
-    // });
+  let openId = VueCookies.get("openid");
+  if (to.meta.requiresAuth && !openId) {
+    //location.href = '/Authorize'
+    next({
+      path: '/',
+      query: {redirect: to.fullPath}
+    });
   }
   else {
     window.document.title = to.meta.title;

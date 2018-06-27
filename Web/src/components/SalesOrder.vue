@@ -13,14 +13,19 @@
   </div>
 </template>
 <script>
-  import identityUser from '../identityUser'
+  import {getUserinfo} from '../identityUser'
+
   export default {
     data() {
       return {
-        page:0,
-        noData:'',
+        userInfo: {},
+        page: 0,
+        noData: '',
         list: []
       }
+    },
+    created() {
+      this.userInfo = getUserinfo();
     },
     methods: {
       refresh(done) {
@@ -36,7 +41,8 @@
         }
         this.page += 1;
 
-        let agrs = {phoneNumber: identityUser.fPhoneNumber, page: this.page};
+        let agrs = {phoneNumber: this.userInfo.fPhoneNumber, page: this.page};
+
         let res = await this.$http.post('/api/SalesOrders', agrs);
 
         if (res.code === 100) {
@@ -68,23 +74,24 @@
     left: 0;
     bottom: 0;
     width: 100%;
-    background-color:#f1f1f1;
+    background-color: #f1f1f1;
   }
 
-  .sales-list{
+  .sales-list {
 
   }
-  .sales-item{
+
+  .sales-item {
     margin-top: .56667rem;
     padding-left: .75rem;
     background-color: #fff;
     font-size: .87333rem;
-    .bill-no{
+    .bill-no {
       height: 3.06667rem;
       line-height: 3.06667rem;
       margin-right: .4rem;
     }
-    .custom{
+    .custom {
       padding: .93333rem 0;
     }
   }

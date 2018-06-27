@@ -19,13 +19,15 @@
 </template>
 
 <script>
-  import {setStore,removeStore} from '../utils'
+  import {setStore, removeStore} from '../utils'
+  import {setUserinfo} from '../identityUser'
+
   export default {
     data() {
       return {
         mobilePhone: '',
         isSubmit: false,
-        openId: ''
+        openId: '',
       }
     },
     methods: {
@@ -46,7 +48,7 @@
         }
       },
       async onSubmit() {
-        if(this.isSubmit) return;
+        if (this.isSubmit) return;
 
         let valid = this.validate();
         if (valid) {
@@ -75,7 +77,8 @@
         return true;
       },
       setState(model) {
-        setStore('userinfo', model);
+        this.$cookies.set("openid", model.fUserOpenID, -1);
+        setUserinfo(model);
         let groupNo = model.fUserGroupNumber;
         if (groupNo === "001" || groupNo === "009") {
           this.$router.push('/salesReturnNotice');
@@ -84,11 +87,11 @@
           this.$router.push('/salesOrder');
         }
       },
-      clearState(){
+      clearState() {
         removeStore("userinfo");
       }
     },
-    beforeRouteEnter(to,from,next){
+    beforeRouteEnter(to, from, next) {
       next(vm => {
         vm.openId = vm.$route.query.openId;
         vm.autoAuth();

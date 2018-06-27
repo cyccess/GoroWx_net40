@@ -33,13 +33,14 @@
 
 <script>
   import {XDialog} from 'vux'
-  import identityUser from '../identityUser'
+  import {getUserinfo} from '../identityUser'
   export default {
     components: {
       XDialog
     },
     data() {
       return {
+        userInfo:{},
         modalShow: false,
         reason: '',
         billNo: '',
@@ -49,11 +50,12 @@
     },
     created() {
       this.billNo = this.$route.query.billNo;
+      this.userInfo = getUserinfo();
       this.getData();
     },
     methods: {
       async getData() {
-        let res = await this.$http.post('/api/SalesReturnNoticeDetail', {phoneNumber: identityUser.fPhoneNumber, fBillNo: this.billNo});
+        let res = await this.$http.post('/api/SalesReturnNoticeDetail', {phoneNumber: this.userInfo.fPhoneNumber, fBillNo: this.billNo});
 
         this.model = res.data.order[0];
         this.field = res.data.field
@@ -67,8 +69,8 @@
       },
       async update(result){
         let args = {
-          phoneNumber: identityUser.fPhoneNumber,
-          userGroupNumber: identityUser.fUserGroupNumber,
+          phoneNumber: this.userInfo.fPhoneNumber,
+          userGroupNumber: this.userInfo.fUserGroupNumber,
           billNo: this.billNo,
           result: result,
           reason: this.reason
@@ -90,7 +92,7 @@
           title: '提示',
           content: message,
           onHide() {
-            vm.$router.push({path: '/salesReturnNotice'});
+            // vm.$router.push({path: '/salesReturnNotice'});
           }
         });
       }
