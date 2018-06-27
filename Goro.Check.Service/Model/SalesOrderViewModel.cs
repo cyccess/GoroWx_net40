@@ -16,6 +16,11 @@ namespace Goro.Check.Service.Model
 
         public string reason { get; set; }
 
+        /// <summary>
+        /// 交期
+        /// </summary>
+        public string deliveryDate { get; set; }
+
 
         /// <summary>
         /// 工艺是否审核
@@ -26,5 +31,7 @@ namespace Goro.Check.Service.Model
         /// 供应是否审核
         /// </summary>
         public string isPo { get; set; }
+
+
     }
 }
