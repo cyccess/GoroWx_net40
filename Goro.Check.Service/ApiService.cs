@@ -193,7 +193,7 @@ namespace Goro.Check.Service
                 cmdText = "tm_p_UpdateSalesReturnQC";
             }
 
-            LoggerHelper.Info("退货通知单审核[" + userGroupNumber+ "]:"+ phoneNumber);
+            LoggerHelper.Info("退货通知单审核[" + userGroupNumber + "]:" + phoneNumber);
 
             var res = SqlHelper.ExecuteNonQuery(CommandType.StoredProcedure, cmdText, sqlParameter);
             var msg = sqlParameter[4].Value;
@@ -238,25 +238,36 @@ namespace Goro.Check.Service
 
         public SalesOrderDetail GetSalesOrderDetail(string phoneNumber, string fBillNo)
         {
-            SalesOrderDetail salesOrder = new SalesOrderDetail();
-            var fields = GetUserGroupFieldDisplayed(phoneNumber, "001");
-
-            salesOrder.Field = fields;
-            var field = string.Join(",", fields.Select(f => f.FFieldName).ToArray());
-
-            SqlParameter[] sqlParameter = new SqlParameter[]
+            try
             {
-              new SqlParameter("@FBillNo",fBillNo)
-            };
+                SalesOrderDetail salesOrder = new SalesOrderDetail();
+                var fields = GetUserGroupFieldDisplayed(phoneNumber, "001");
 
-            field += ",fMEContent,fPOContent,fPDDeason,fGMResult,fPDCResult";
+                salesOrder.Field = fields;
+                var field = string.Join(",", fields.Select(f => f.FFieldName).ToArray());
 
-            string sql = "select " + field + " from tm_v_SeOrderList where FBillNo=@FBillNo";
-            var res = SqlHelper.ExecuteDataTable(CommandType.Text, sql, sqlParameter);
-            salesOrder.Order = res;
+                SqlParameter[] sqlParameter = new SqlParameter[]
+                {
+                    new SqlParameter("@FBillNo",fBillNo)
+                };
 
-            LoggerHelper.Info("销售订单详情");
-            return salesOrder;
+                field += ",fMEContent,fPOContent,fPDDeason,fGMResult,fPDCResult";
+
+                string sql = "select " + field + " from tm_v_SeOrderList where FBillNo=@FBillNo";
+
+                LoggerHelper.Info("sql:"+sql);
+
+                var res = SqlHelper.ExecuteDataTable(CommandType.Text, sql, sqlParameter);
+                salesOrder.Order = res;
+
+                LoggerHelper.Info("销售订单详情");
+                return salesOrder;
+            }
+            catch (Exception e)
+            {
+                LoggerHelper.Info("销售订单详情错误：" + e);
+                return null;
+            }
         }
 
         /// <summary>
@@ -311,7 +322,7 @@ namespace Goro.Check.Service
                 sqlParameter.Add(new SqlParameter("@Reason", model.reason));
             }
 
-            if(cmdText == "")
+            if (cmdText == "")
             {
                 LoggerHelper.Info("销售单审核：用户分组未找到");
                 return "用户分组未找到！";

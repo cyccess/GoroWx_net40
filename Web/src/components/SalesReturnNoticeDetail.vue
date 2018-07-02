@@ -9,7 +9,7 @@
     </div>
 
     <div class="btn-wrapper">
-      <button @click="modalShow=true" class="btn btn-default" type="submit">不同意</button>
+      <button @click="modalShow=true" class="btn btn-secondary" type="submit">不同意</button>
       <button @click="agree" class="btn btn-primary" type="submit">同意</button>
     </div>
 
@@ -23,7 +23,7 @@
           <textarea class="form-control" v-model="reason"></textarea>
           <div class="btn-box">
             <button @click="disagree" type="button" class="btn btn-sm btn-primary">确定</button>
-            <button @click="modalShow=false" type="button" class="btn btn-sm btn-default">取消</button>
+            <button @click="modalShow=false" type="button" class="btn btn-sm btn-secondary">取消</button>
           </div>
         </div>
       </div>

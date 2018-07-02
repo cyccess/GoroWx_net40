@@ -9,7 +9,6 @@ import routes from './router/index'
 import VueScroller from 'vue-scroller'
 import VueCookies from 'vue-cookies'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import identityUser from './identityUser'
 
 import {AjaxPlugin, AlertPlugin, ConfirmPlugin, ToastPlugin} from 'vux'
 
@@ -63,7 +62,6 @@ AjaxPlugin.$http.interceptors.response.use(response => {
 router.beforeEach((to, from, next) => {
   let openId = VueCookies.get("openid");
   if (to.meta.requiresAuth && !openId) {
-    //location.href = '/Authorize'
     next({
       path: '/',
       query: {redirect: to.fullPath}

@@ -8,7 +8,7 @@ export const getUserinfo = () => {
   if (user) {
     userInfo = JSON.parse(user);
   }
-  console.log(userInfo)
+  console.log(userInfo);
   return userInfo;
 };
 

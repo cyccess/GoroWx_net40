@@ -35,7 +35,8 @@
         this.clearState();
         if (!this.openId) {
           // this.openId = 'oxz6qw-riVMn6jdrFp0tHWDl6Hh8';
-          location.href = "/Authorize";
+          console.log('跳转获取微信授权')
+          window.location.href = "/Authorize";
           return;
         }
         console.log("openid:" + this.openId);
@@ -89,6 +90,7 @@
       },
       clearState() {
         removeStore("userinfo");
+        this.$cookies.remove("openid");
       }
     },
     beforeRouteEnter(to, from, next) {

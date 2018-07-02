@@ -28,13 +28,13 @@
 
     <!--总经理组审核按钮-->
     <div class="btn-wrapper" v-if="userGroupNumber==='002'">
-      <button @click="modalShow=true" class="btn btn-default" type="submit">不同意</button>
+      <button @click="modalShow=true" class="btn btn-secondary" type="submit">不同意</button>
       <button @click="agree" class="btn btn-primary" type="submit">同意</button>
     </div>
 
     <!--生产确认/不确认按钮-->
     <div class="btn-wrapper" v-else-if="userGroupNumber==='004'">
-      <button @click="modalShow=true" class="btn btn-default" type="submit">不确认</button>
+      <button @click="modalShow=true" class="btn btn-secondary" type="submit">不确认</button>
       <button @click="agree" class="btn btn-primary" type="submit">确认</button>
     </div>
 
@@ -62,7 +62,7 @@
           <textarea class="form-control" v-model="reason"></textarea>
           <div class="btn-box">
             <button @click="disagree" type="button" class="btn btn-sm btn-primary">确定</button>
-            <button @click="modalShow=false" type="button" class="btn btn-sm btn-default">取消</button>
+            <button @click="modalShow=false" type="button" class="btn btn-sm btn-secondary">取消</button>
           </div>
         </div>
       </div>
@@ -79,7 +79,7 @@
           <textarea class="form-control" v-model="reason"></textarea>
           <div class="btn-box">
             <button @click="reply" type="button" class="btn btn-sm btn-primary">确定</button>
-            <button @click="modelReply=false" type="button" class="btn btn-sm btn-default">取消</button>
+            <button @click="modelReply=false" type="button" class="btn btn-sm btn-secondary">取消</button>
           </div>
         </div>
       </div>
@@ -96,7 +96,7 @@
           <datetime-view v-model="deliveryDate" ref="datetime"></datetime-view>
           <div class="btn-box">
             <button @click="proAgree" type="button" class="btn btn-sm btn-primary">确定</button>
-            <button @click="modelDelivery=false" type="button" class="btn btn-sm btn-default">取消</button>
+            <button @click="modelDelivery=false" type="button" class="btn btn-sm btn-secondary">取消</button>
           </div>
         </div>
       </div>
