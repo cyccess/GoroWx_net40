@@ -7,3 +7,10 @@ goroadmin399
 企业号
 admin@goro.com.cn
 goroadmin
+
+
+企业ID
+wx8a16779df149b847
+
+应用凭着密钥
+DD1J9n65Hv-Qi4Qm9Tx13cHhttTmUto6rIq2-IL0CZ0

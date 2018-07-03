@@ -53,6 +53,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WechatService.cs" />
     <Compile Include="WechatToken.cs" />
+    <Compile Include="WechatUserInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Goro.Check.Data\Goro.Check.Data.csproj">

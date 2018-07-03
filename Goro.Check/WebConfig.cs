@@ -38,5 +38,21 @@ namespace Goro.Check
         /// 商户支付密钥，参考开户邮件设置（必须配置）
         /// </summary>
         public static string KEY = string.Empty;
+
+        /// <summary>
+        /// 企业的CorpID
+        /// </summary>
+        public static string CorpID = string.Empty;
+
+        /// <summary>
+        /// 企业应用的id
+        /// </summary>
+        public static string AgentId = string.Empty;
+
+        /// <summary>
+        /// 应用的凭证密钥
+        /// </summary>
+        public static string Secret = string.Empty;
+
     }
 }

@@ -23,7 +23,11 @@ namespace Goro.Check.Cache
 
         public string Get(string key)
         {
-            return _cache.Get(key).ToString();
+            var res = _cache.Get(key);
+            if (res != null)
+                return res.ToString();
+
+            return "";
         }
 
         public void Remove(string key)

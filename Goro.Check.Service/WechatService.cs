@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Psb.Service
+namespace Goro.Check.Service
 {
     public static class WechatService
     {
@@ -27,12 +27,28 @@ namespace Psb.Service
             var token = CacheService.Get("AccessToken");
             if (string.IsNullOrEmpty(token))
             {
-                string url = "https://"+ "api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+WebConfig.APPID+"&secret="+WebConfig.APPSECRET;
+                string url = "https://" + "api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + WebConfig.APPID + "&secret=" + WebConfig.APPSECRET;
 
                 var accessToken = HttpHelper.Get<AccessToken>(url);
                 token = accessToken.access_token;
                 CacheService.Set("AccessToken", token, new TimeSpan(0, 30, 0));
-                LoggerHelper.Info("重新获取AccessToken="+token);
+                LoggerHelper.Info("重新获取AccessToken=" + token);
+            }
+
+            return token;
+        }
+
+
+        public static string GetWrokAccessToken()
+        {
+            var token = CacheService.Get("AccessToken");
+            if (string.IsNullOrEmpty(token))
+            {
+                string url = "https://" + "qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=" + WebConfig.CorpID + "&corpsecret=" + WebConfig.Secret;
+                var accessToken = HttpHelper.Get<AccessToken>(url);
+                token = accessToken.access_token;
+                CacheService.Set("AccessToken", token, new TimeSpan(1, 30, 0));
+                LoggerHelper.Info("获取AccessToken:" + token);
             }
 
             return token;

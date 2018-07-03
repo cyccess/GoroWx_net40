@@ -27,6 +27,10 @@ namespace Goro.Check.Web
             WebConfig.APPSECRET = ConfigurationManager.AppSettings["APPSECRET"];
             WebConfig.WebHost = ConfigurationManager.AppSettings["WebHost"];
 
+            WebConfig.CorpID = ConfigurationManager.AppSettings["CorpID"];
+            WebConfig.AgentId = ConfigurationManager.AppSettings["AgentId"];
+            WebConfig.Secret = ConfigurationManager.AppSettings["Secret"];
+
             CacheService.Init();
         }
 
