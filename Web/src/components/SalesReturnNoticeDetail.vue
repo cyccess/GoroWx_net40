@@ -23,7 +23,7 @@
           <textarea class="form-control" v-model="reason"></textarea>
           <div class="btn-box">
             <button @click="disagree" type="button" class="btn btn-sm btn-primary">确定</button>
-            <button @click="modalShow=false" type="button" class="btn btn-sm btn-secondary">取消</button>
+            <button @click="cancel" type="button" class="btn btn-sm btn-secondary">取消</button>
           </div>
         </div>
       </div>
@@ -34,18 +34,19 @@
 <script>
   import {XDialog} from 'vux'
   import {getUserinfo} from '../identityUser'
+
   export default {
     components: {
       XDialog
     },
     data() {
       return {
-        userInfo:{},
+        userInfo: {},
         modalShow: false,
         reason: '',
         billNo: '',
         model: {},
-        field:[]
+        field: []
       }
     },
     created() {
@@ -55,7 +56,10 @@
     },
     methods: {
       async getData() {
-        let res = await this.$http.post('/api/SalesReturnNoticeDetail', {phoneNumber: this.userInfo.fPhoneNumber, fBillNo: this.billNo});
+        let res = await this.$http.post('/api/SalesReturnNoticeDetail', {
+          phoneNumber: this.userInfo.fPhoneNumber,
+          fBillNo: this.billNo
+        });
 
         this.model = res.data.order[0];
         this.field = res.data.field
@@ -67,7 +71,7 @@
         this.modalShow = false;
         this.update("N");
       },
-      async update(result){
+      async update(result) {
         let args = {
           phoneNumber: this.userInfo.fPhoneNumber,
           userGroupNumber: this.userInfo.fUserGroupNumber,
@@ -77,14 +81,14 @@
         };
 
         let res = await this.$http.post('/api/UpdateSalesReturn', args);
-        let message =  res.message;
-        if(result==="Y"){
-          if(res.message ==="OK"){
-            message  = "审核通过！";
+        let message = res.message;
+        if (result === "Y") {
+          if (res.message === "OK") {
+            message = "审核通过！";
           }
-        }else{
-          if(res.message === "OK"){
-            message  = "操作成功！";
+        } else {
+          if (res.message === "OK") {
+            message = "操作成功！";
           }
         }
         let vm = this;
@@ -95,6 +99,10 @@
             // vm.$router.push({path: '/salesReturnNotice'});
           }
         });
+      },
+      cancel() {
+        this.modalShow = false;
+        this.reason = '';
       }
     }
   }
@@ -138,9 +146,9 @@
     line-height: 1.5rem;
   }
 
-  .line{
+  .line {
     padding-bottom: .85rem;
-    margin-bottom: .85rem ;
+    margin-bottom: .85rem;
   }
 
   .weui-dialog {

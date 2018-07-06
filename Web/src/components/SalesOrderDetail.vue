@@ -62,7 +62,7 @@
           <textarea class="form-control" v-model="reason"></textarea>
           <div class="btn-box">
             <button @click="disagree" type="button" class="btn btn-sm btn-primary">确定</button>
-            <button @click="modalShow=false" type="button" class="btn btn-sm btn-secondary">取消</button>
+            <button @click="cancel" type="button" class="btn btn-sm btn-secondary">取消</button>
           </div>
         </div>
       </div>
@@ -79,7 +79,7 @@
           <textarea class="form-control" v-model="reason"></textarea>
           <div class="btn-box">
             <button @click="reply" type="button" class="btn btn-sm btn-primary">确定</button>
-            <button @click="modelReply=false" type="button" class="btn btn-sm btn-secondary">取消</button>
+            <button @click="cancel" type="button" class="btn btn-sm btn-secondary">取消</button>
           </div>
         </div>
       </div>
@@ -96,7 +96,7 @@
           <datetime-view v-model="deliveryDate" ref="datetime"></datetime-view>
           <div class="btn-box">
             <button @click="proAgree" type="button" class="btn btn-sm btn-primary">确定</button>
-            <button @click="modelDelivery=false" type="button" class="btn btn-sm btn-secondary">取消</button>
+            <button @click="cancel" type="button" class="btn btn-sm btn-secondary">取消</button>
           </div>
         </div>
       </div>
@@ -206,6 +206,15 @@
             // vm.$router.push({path: '/salesOrder'});
           }
         });
+      },
+      cancel() {
+        this.reason = '';
+        this.isMe = false;
+        this.isPo = false;
+
+        this.modalShow = false;
+        this.modelReply = false;
+        this.modelDelivery = false;
       }
     }
   }
