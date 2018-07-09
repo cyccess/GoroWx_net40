@@ -46,7 +46,7 @@
     <!--总经理组、生产审核对话框-->
     <x-dialog v-model="modalShow" class="dialog-disagree">
       <div class="card">
-        <div class="dialog-close" @click="modalShow=false">
+        <div class="dialog-close" @click="cancel">
           <span class="vux-close"></span>
         </div>
         <div class="card-body">
@@ -71,7 +71,7 @@
     <!--回复对话框-->
     <x-dialog v-model="modelReply" class="dialog-reply">
       <div class="card">
-        <div class="dialog-close" @click="modelReply=false">
+        <div class="dialog-close" @click="cancel">
           <span class="vux-close"></span>
         </div>
         <div class="card-body">
@@ -88,7 +88,7 @@
     <!--交期选择对话框-->
     <x-dialog v-model="modelDelivery">
       <div class="card">
-        <div class="dialog-close" @click="modelDelivery=false">
+        <div class="dialog-close" @click="cancel">
           <span class="vux-close"></span>
         </div>
         <div class="card-body">
