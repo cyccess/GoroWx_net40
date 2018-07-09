@@ -25,11 +25,10 @@ namespace Goro.Check.Web.Controllers
             LoggerHelper.Info("code:" + code);
          
             string access_token = WechatService.GetWrokAccessToken();
-
             string url = "https://" + "qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=" + access_token + "&code=" + code;
             var token = HttpHelper.Get<WechatUserInfo>(url);
 
-            LoggerHelper.Info("UserId:" + token.UserId);
+            LoggerHelper.Info("UserInfo:" + JsonHelper.Serialize(token));
             //Cache.CacheService.Set(token.UserId, token);
 
             string redirectUrl = "/#/?openId=" + token.UserId;

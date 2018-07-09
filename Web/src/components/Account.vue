@@ -35,7 +35,7 @@
         this.clearState();
         if (!this.openId) {
           // this.openId = 'oxz6qw-riVMn6jdrFp0tHWDl6Hh8';
-          console.log('跳转获取微信授权')
+          // console.log('跳转获取微信授权')
           window.location.href = "/Authorize";
           return;
         }
@@ -78,7 +78,7 @@
         return true;
       },
       setState(model) {
-        this.$cookies.set("openid", model.fUserOpenID, -1);
+        this.$cookies.set("openid", model.fUserOpenID);
         setUserinfo(model);
         let groupNo = model.fUserGroupNumber;
         if (groupNo === "001" || groupNo === "009") {

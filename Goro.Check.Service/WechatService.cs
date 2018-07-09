@@ -22,6 +22,10 @@ namespace Goro.Check.Service
             return t;
         }
 
+        /// <summary>
+        /// 获取公众号 AccessToken
+        /// </summary>
+        /// <returns></returns>
         public static string GetAccessToken()
         {
             var token = CacheService.Get("AccessToken");
@@ -38,7 +42,10 @@ namespace Goro.Check.Service
             return token;
         }
 
-
+        /// <summary>
+        /// 获取企业微信 AccessToken
+        /// </summary>
+        /// <returns></returns>
         public static string GetWrokAccessToken()
         {
             var token = CacheService.Get("AccessToken");
