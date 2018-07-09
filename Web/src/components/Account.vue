@@ -80,7 +80,7 @@
       setState(model) {
         this.$cookies.set("openid", model.fUserOpenID);
         setUserinfo(model);
-        let groupNo = model.fUserGroupNumber;
+        let groupNo = model.fUserGroupNumber; //用户分组编号
         if (groupNo === "001" || groupNo === "009") {
           this.$router.push('/salesReturnNotice');
         }
