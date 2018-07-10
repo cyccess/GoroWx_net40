@@ -485,7 +485,8 @@ namespace Goro.Check.Service
             {
                 new SqlParameter("@PhoneNumber",model.phoneNumber),
                 new SqlParameter("@BillNo",model.billNo),
-                new SqlParameter("@Reason", model.reason)
+                new SqlParameter("@Reason", model.reason),
+                new SqlParameter { ParameterName = "@Msg", Value = "", Direction = ParameterDirection.Output, Size = 100, SqlDbType = SqlDbType.NVarChar }
             };
 
             string cmdText = "tm_p_UpdateSalesOrderME";
@@ -503,7 +504,8 @@ namespace Goro.Check.Service
             {
                 new SqlParameter("@PhoneNumber",model.phoneNumber),
                 new SqlParameter("@BillNo",model.billNo),
-                new SqlParameter("@Reason", model.reason)
+                new SqlParameter("@Reason", model.reason),
+                new SqlParameter { ParameterName = "@Msg", Value = "", Direction = ParameterDirection.Output, Size = 100, SqlDbType = SqlDbType.NVarChar }
             };
 
             string cmdText = "tm_p_UpdateSalesOrderPO";
