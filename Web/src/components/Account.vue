@@ -19,8 +19,7 @@
 </template>
 
 <script>
-  import {setStore, removeStore} from '../utils'
-  import {setUserinfo} from '../identityUser'
+  import {mapMutations} from 'vuex'
 
   export default {
     data() {
@@ -31,12 +30,14 @@
       }
     },
     methods: {
+      ...mapMutations([
+        'setUserinfo'
+      ]),
       async autoAuth() {
-        this.clearState();
         if (!this.openId) {
           // this.openId = 'oxz6qw-riVMn6jdrFp0tHWDl6Hh8';
           // this.openId = 'cyccess'; //企业微信UserID
-          // console.log('跳转获取微信授权')
+          // console.log('跳转获取微信授权') 13801885383
           window.location.href = "/Authorize";
           return;
         }
@@ -79,8 +80,8 @@
         return true;
       },
       setState(model) {
-        this.$cookies.set("openid", model.fUserOpenID, '0');
-        setUserinfo(model);
+        this.setUserinfo(model);
+
         let groupNo = model.fUserGroupNumber; //用户分组编号
         if (groupNo === "001" || groupNo === "009") {
           this.$router.push('/salesReturnNotice');
@@ -88,16 +89,12 @@
         else {
           this.$router.push('/salesOrder');
         }
-      },
-      clearState() {
-        removeStore("userinfo");
-        this.$cookies.remove("openid");
       }
     },
     beforeRouteEnter(to, from, next) {
       next(vm => {
         vm.openId = vm.$route.query.openId;
-        vm.autoAuth();
+        // vm.autoAuth();
       });
     }
   }
