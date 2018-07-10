@@ -338,6 +338,23 @@ namespace Goro.Check.Service
         {
             try
             {
+                switch (model.userGroupNumber)
+                {
+                    case "002":
+                        return UpdateSalesOrderGM(model);
+                    case "004":
+                        return UpdateSalesOrderPD(model);
+                    case "005":
+                        return UpdateSalesOrderME(model);
+                    case "006":
+                        return UpdateSalesOrderPO(model);
+                    default:
+                        LoggerHelper.Info("销售单审核：用户分组未找到" + model.userGroupNumber);
+                        return "用户分组未找到！";
+                }
+
+                #region 
+
                 var sqlParameter = new List<SqlParameter>()
                 {
                     new SqlParameter("@PhoneNumber",model.phoneNumber),
@@ -397,6 +414,8 @@ namespace Goro.Check.Service
                 var msg = sqlParameter.Last().Value;
 
                 return msg.ToString();
+
+                #endregion
             }
             catch (Exception e)
             {
@@ -405,6 +424,96 @@ namespace Goro.Check.Service
             }
         }
 
+        private string UpdateSalesOrderGM(SalesOrderViewModel model)
+        {
+            var sqlParameter = new List<SqlParameter>()
+            {
+                new SqlParameter("@PhoneNumber",model.phoneNumber),
+                new SqlParameter("@BillNo",model.billNo),
+                new SqlParameter("@Reason", model.reason),
+                new SqlParameter("@Result", model.result),
+                new SqlParameter { ParameterName = "@Msg", Value = "", Direction = ParameterDirection.Output, Size = 100, SqlDbType = SqlDbType.NVarChar }
+            };
+
+            string cmdText = "tm_p_UpdateSalesOrderGM";
+
+            var res = SqlHelper.ExecuteNonQuery(CommandType.StoredProcedure, cmdText, sqlParameter.ToArray());
+            var msg = sqlParameter.Last().Value;
+            LoggerHelper.Info("销售单审核,总经理审核更新【" + model.userGroupNumber + "：" + model.phoneNumber + "】" + msg);
+
+            return msg.ToString();
+        }
+
+        private string UpdateSalesOrderPD(SalesOrderViewModel model)
+        {
+            var sqlParameter = new List<SqlParameter>()
+            {
+                new SqlParameter("@PhoneNumber",model.phoneNumber),
+                new SqlParameter("@BillNo",model.billNo)
+            };
+
+            string cmdText = "";
+
+            if (model.result == "Y") //生产确认通过更新
+            {
+                cmdText = "tm_p_UpdateSalesOrderPDC";
+                sqlParameter.Add(new SqlParameter("@DeliveryDate", model.deliveryDate));
+                sqlParameter.Add(new SqlParameter("@Result", model.result));
+            }
+
+            if (model.result == "N") //生产不通过更新
+            {
+                cmdText = "tm_p_UpdateSalesOrderPDD";
+                sqlParameter.Add(new SqlParameter("@Result", model.result));
+                sqlParameter.Add(new SqlParameter("@Reason", model.reason));
+                sqlParameter.Add(new SqlParameter("@ISME", model.isMe));
+                sqlParameter.Add(new SqlParameter("@ISPO", model.isPo));
+            }
+
+            sqlParameter.Add(new SqlParameter { ParameterName = "@Msg", Value = "", Direction = ParameterDirection.Output, Size = 100, SqlDbType = SqlDbType.NVarChar });
+
+            var res = SqlHelper.ExecuteNonQuery(CommandType.StoredProcedure, cmdText, sqlParameter.ToArray());
+            var msg = sqlParameter.Last().Value;
+            LoggerHelper.Info("销售单审核,生产审核更新【" + model.userGroupNumber + "：" + model.phoneNumber + "】" + msg);
+
+            return msg.ToString();
+        }
+
+        private string UpdateSalesOrderME(SalesOrderViewModel model)
+        {
+            var sqlParameter = new List<SqlParameter>()
+            {
+                new SqlParameter("@PhoneNumber",model.phoneNumber),
+                new SqlParameter("@BillNo",model.billNo),
+                new SqlParameter("@Reason", model.reason)
+            };
+
+            string cmdText = "tm_p_UpdateSalesOrderME";
+
+            var res = SqlHelper.ExecuteNonQuery(CommandType.StoredProcedure, cmdText, sqlParameter.ToArray());
+            var msg = sqlParameter.Last().Value;
+            LoggerHelper.Info("销售单审核,工艺审核更新【" + model.userGroupNumber + "：" + model.phoneNumber + "】" + msg);
+
+            return msg.ToString();
+        }
+
+        private string UpdateSalesOrderPO(SalesOrderViewModel model)
+        {
+            var sqlParameter = new List<SqlParameter>()
+            {
+                new SqlParameter("@PhoneNumber",model.phoneNumber),
+                new SqlParameter("@BillNo",model.billNo),
+                new SqlParameter("@Reason", model.reason)
+            };
+
+            string cmdText = "tm_p_UpdateSalesOrderPO";
+
+            var res = SqlHelper.ExecuteNonQuery(CommandType.StoredProcedure, cmdText, sqlParameter.ToArray());
+            var msg = sqlParameter.Last().Value;
+            LoggerHelper.Info("销售单审核,供应审核更新【" + model.userGroupNumber + "：" + model.phoneNumber + "】" + msg);
+
+            return msg.ToString();
+        }
 
 
         public string GetUserIdByUserGroup(string userGroupNumber)
