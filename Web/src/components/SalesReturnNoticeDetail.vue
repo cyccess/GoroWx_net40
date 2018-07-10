@@ -33,7 +33,7 @@
 
 <script>
   import {XDialog} from 'vux'
-  import {getUserinfo} from '../identityUser'
+  import {mapState} from 'vuex'
 
   export default {
     components: {
@@ -41,7 +41,6 @@
     },
     data() {
       return {
-        userInfo: {},
         modalShow: false,
         reason: '',
         billNo: '',
@@ -49,9 +48,13 @@
         field: []
       }
     },
+    computed:{
+      ...mapState([
+        'userInfo'
+      ])
+    },
     created() {
       this.billNo = this.$route.query.billNo;
-      this.userInfo = getUserinfo();
       this.getData();
     },
     methods: {
@@ -96,7 +99,7 @@
           title: '提示',
           content: message,
           onHide() {
-            // vm.$router.push({path: '/salesReturnNotice'});
+            vm.$router.push({path: '/salesReturnNotice'});
           }
         });
       },

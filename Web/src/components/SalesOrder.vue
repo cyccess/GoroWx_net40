@@ -13,19 +13,23 @@
   </div>
 </template>
 <script>
-  import {getUserinfo} from '../identityUser'
+  import {mapState} from 'vuex'
 
   export default {
     data() {
       return {
-        userInfo: {},
         page: 0,
         noData: '',
         list: []
       }
     },
+    computed: {
+      ...mapState([
+        'userInfo'
+      ])
+    },
     created() {
-      this.userInfo = getUserinfo();
+
     },
     methods: {
       refresh(done) {

@@ -3,6 +3,7 @@ using Goro.Check.Cache;
 using Goro.Check.Service;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -59,6 +60,46 @@ namespace Goro.Check.Service
             }
 
             return token;
+        }
+
+
+        public static void Send(string touser, string title, string desc, string link)
+        {
+            string accessToken = GetWrokAccessToken();
+
+            string url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + accessToken;
+
+            var now = DateTime.Now.ToString("yyyy年MM月dd日");
+
+            var textcard = new
+            {
+                title,
+                description = "<div class=\"gray\">" + now + "</div><br><div class=\"highlight\">" + desc + "</div>",
+                url = link,
+                btntxt = "详情"
+            };
+
+            var postJson = new
+            {
+                touser,
+                toparty = "",
+                totag = "",
+                msgtype = "textcard",
+                agentid = 1000002,
+                textcard
+            };
+
+            string res = HttpHelper.Post(url, JsonHelper.Serialize(postJson));
+        }
+
+
+        public static string ComposeUrl(Dictionary<string, string> paras)
+        {
+            var queryString = paras.Select(p => p.Key + "=" + p.Value).ToArray();
+
+            string sortedQueryString = string.Join("&", queryString);
+
+            return sortedQueryString;
         }
 
 

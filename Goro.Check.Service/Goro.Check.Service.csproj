@@ -43,6 +43,7 @@
     <Compile Include="ApiService.cs" />
     <Compile Include="IApiService.cs" />
     <Compile Include="JsTicket.cs" />
+    <Compile Include="MessageResult.cs" />
     <Compile Include="Model\FieldDisplayed.cs" />
     <Compile Include="Model\SalesOrder.cs" />
     <Compile Include="Model\SalesOrderDetail.cs" />

@@ -30,10 +30,5 @@ namespace Goro.Check
         {
             return JsonConvert.SerializeObject(obj);
         }
-
-
-
-
-
     }
 }

@@ -1,11 +1,56 @@
 <template>
-    $END$
+
 </template>
 
 <script>
-    export default {
-        name: "authorize"
+  import {mapMutations} from 'vuex'
+
+  export default {
+    data() {
+      return {}
+    },
+
+    methods: {
+      ...mapMutations([
+        'setUserinfo', 'setOpenid'
+      ]),
+      async autoAuth() {
+        // 如果本地没有授权信息，并且不是获取授权后跳转到此页面的，将跳转进行授权操作
+        if (!window.localStorage.getItem('openid') && !this.openId) {
+          // window.location.href = "http://localhost:8002/Authorize";
+          window.location.href = "/Authorize";
+          return;
+        }
+
+        let openid = this.openId || window.localStorage.getItem('openid');
+        console.log("正在登录...:" + openid);
+        let res = await this.$http.post('/api/Login', {openId: openid});
+        if (res.data) {
+          this.setState(res.data);
+        }
+        else {
+          this.$router.push({path: '/account', query: {openId: openid}});
+        }
+      },
+      setState(model) {
+        this.setUserinfo(model);
+        this.setOpenid(model.fUserOpenID);
+        let groupNo = model.fUserGroupNumber; //用户分组编号
+        if (groupNo === "001" || groupNo === "009") {
+          this.$router.push('/salesReturnNotice');
+        }
+        else {
+          this.$router.push('/salesOrder');
+        }
+      }
+    },
+    beforeRouteEnter(to, from, next) {
+      next(vm => {
+        vm.openId = vm.$route.query.openId;
+        vm.autoAuth();
+      });
     }
+  }
 </script>
 
 <style scoped>

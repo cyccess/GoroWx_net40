@@ -31,7 +31,7 @@
     },
     methods: {
       ...mapMutations([
-        'setUserinfo'
+        'setUserinfo', 'setOpenid'
       ]),
       async autoAuth() {
         if (!this.openId) {
@@ -81,7 +81,7 @@
       },
       setState(model) {
         this.setUserinfo(model);
-
+        this.setOpenid(model.fUserOpenID);
         let groupNo = model.fUserGroupNumber; //用户分组编号
         if (groupNo === "001" || groupNo === "009") {
           this.$router.push('/salesReturnNotice');

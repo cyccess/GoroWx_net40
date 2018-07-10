@@ -1,6 +1,7 @@
 import {getStore, setStore} from './utils';
 
 const USER_INFO = 'userinfo';
+const OPEN_ID = 'openid';
 
 export const getUserinfo = () => {
   let userInfo = null;
@@ -15,3 +16,12 @@ export const getUserinfo = () => {
 export const setUserinfo = (model) => {
   setStore(USER_INFO, JSON.stringify(model));
 };
+
+export const setOpenid = (openid) => {
+  setStore(OPEN_ID, openid);
+};
+
+export const getOpenid = () => {
+  getStore(OPEN_ID);
+};
+

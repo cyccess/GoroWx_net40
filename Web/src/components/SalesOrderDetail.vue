@@ -16,14 +16,14 @@
         <span>{{item.fFieldDescription}}：{{model[item.fFieldName]}}</span>
       </div>
 
-      <!--生产显示回复-->
-      <div class="info-text" v-if="userGroupNumber==='004'">
-        <span>工艺回复：{{model['fMEContent']}}</span><br>
-        <span>供应回复：{{model['fPOContent']}}</span>
-      </div>
+      <!--&lt;!&ndash;生产显示回复&ndash;&gt;-->
+      <!--<div class="info-text" v-if="userGroupNumber==='004'">-->
+        <!--<span>工艺回复：{{model['fMEContent']}}</span><br>-->
+        <!--<span>供应回复：{{model['fPOContent']}}</span>-->
+      <!--</div>-->
 
-      <!--工艺/供应显示生产不确认原因-->
-      <div class="info-text" v-if="userGroupNumber==='005'||userGroupNumber==='006'">生产不确认原因：{{model['fPDDeason']}}</div>
+      <!--&lt;!&ndash;工艺/供应显示生产不确认原因&ndash;&gt;-->
+      <!--<div class="info-text" v-if="userGroupNumber==='005'||userGroupNumber==='006'">生产不确认原因：{{model['fPDDeason']}}</div>-->
     </div>
 
     <!--总经理组审核按钮-->
@@ -106,7 +106,7 @@
 
 <script>
   import {XDialog, CheckIcon, DatetimeView} from 'vux'
-  import {getUserinfo} from '../identityUser'
+  import {mapState} from 'vuex'
 
   export default {
     components: {
@@ -114,7 +114,6 @@
     },
     data() {
       return {
-        userInfo: {},
         modalShow: false,
         modelReply: false,
         modelDelivery: false,
@@ -129,12 +128,15 @@
         userName: ''
       }
     },
-
+    computed: {
+      ...mapState([
+        'userInfo'
+      ])
+    },
     created() {
       this.billNo = this.$route.query.billNo;
       let now = new Date();
       this.deliveryDate = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
-      this.userInfo = getUserinfo();
       this.userGroupNumber = this.userInfo.fUserGroupNumber;
       this.userName = this.userInfo.fEmpName;
       this.getData();
@@ -203,7 +205,7 @@
           title: '提示',
           content: message,
           onHide() {
-            // vm.$router.push({path: '/salesOrder'});
+            vm.$router.push({path: '/salesOrder'});
           }
         });
       },

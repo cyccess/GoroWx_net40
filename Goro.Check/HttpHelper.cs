@@ -13,10 +13,14 @@ namespace Goro.Check
     public abstract class HttpHelper
     {
 
-        public static T Post<T>(string requestUrl)
+        public static T Post<T>(string requestUrl,IDictionary<string, string> parameters)
         {
+            ServicePointManager.ServerCertificateValidationCallback += RemoteCertificateValidate;
+
             var request = (HttpWebRequest)WebRequest.Create(requestUrl);
             request.Method = "POST";
+
+  
             var response = request.GetResponse();
             string responseJson = "";
             using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
@@ -27,6 +31,38 @@ namespace Goro.Check
             //序列化
             return JsonHelper.Deserialize<T>(responseJson);
         }
+
+        /// <summary>
+        /// POST json
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="jsonData"></param>
+        /// <returns></returns>
+        public static string Post(string url, string jsonData)
+        {
+            HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
+
+            httpWebRequest.ContentType = "text/xml";
+            httpWebRequest.Method = "POST";
+            httpWebRequest.Timeout = 20000;
+
+            byte[] btBodys = Encoding.UTF8.GetBytes(jsonData);
+            httpWebRequest.ContentLength = btBodys.Length;
+            httpWebRequest.GetRequestStream().Write(btBodys, 0, btBodys.Length);
+
+            HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+            StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream());
+            string responseContent = streamReader.ReadToEnd();
+
+            httpWebResponse.Close();
+            streamReader.Close();
+            httpWebRequest.Abort();
+            httpWebResponse.Close();
+
+            return responseContent;
+        }
+
+   
 
         public static string GetString(string requestUrl)
         {

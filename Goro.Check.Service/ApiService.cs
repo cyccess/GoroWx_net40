@@ -229,6 +229,9 @@ namespace Goro.Check.Service
                 if (userGroupNumber == "001") //销售总监组审核更新
                 {
                     cmdText = "tm_p_UpdateSalesReturnCSO";
+
+                    string toUser = GetUserIdByUserGroup("002,008");
+                    WechatService.Send(toUser, "退货通知单", reason, WebConfig.WebHost + "/#/salesReturnNoticeDetail?billNo=" + billNo);
                 }
                 if (userGroupNumber == "009") //质检组审核更新
                 {
@@ -307,7 +310,7 @@ namespace Goro.Check.Service
                     new SqlParameter("@FBillNo",fBillNo)
                 };
 
-                field += ",fMEContent,fPOContent,fPDDeason,fGMResult,fPDCResult";
+                //field += ",fMEContent,fPOContent,fPDDeason,fGMResult,fPDCResult";
 
                 string sql = "select " + field + " from tm_v_SeOrderList where FBillNo=@FBillNo";
 
@@ -400,6 +403,23 @@ namespace Goro.Check.Service
                 LoggerHelper.Info("销售单审核【" + model.userGroupNumber + "：" + model.phoneNumber + "】" + e);
                 return "销售单审核失败";
             }
+        }
+
+
+
+        public string GetUserIdByUserGroup(string userGroupNumber)
+        {
+            SqlParameter[] sqlParameter = new SqlParameter[]
+            {
+                new SqlParameter{ ParameterName = "@UserGroupNumber", Value = userGroupNumber, SqlDbType = SqlDbType.NVarChar }
+            };
+
+            string sql = "select * from tm_v_UserInfo where FUserGroupNumber in(@UserGroupNumber)";
+            var res = SqlHelper.ExecuteDataTable(CommandType.Text, sql, sqlParameter);
+
+            var rowCollection = res.AsEnumerable().Select(u => u["FUserOpenID"]);
+
+            return string.Join("|", rowCollection);
         }
     }
 }

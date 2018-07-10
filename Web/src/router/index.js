@@ -1,6 +1,12 @@
 export default [
   {
     path: '/',
+    name: 'Authorize',
+    component: resolve => require(['@/components/Authorize.vue'], resolve),
+    meta: {title: '加载中...'}
+  },
+  {
+    path: '/account',
     name: 'Account',
     component: resolve => require(['@/components/Account.vue'], resolve),
     meta: {title: '绑定手机号'}

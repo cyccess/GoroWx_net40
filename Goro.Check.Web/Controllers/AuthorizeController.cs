@@ -17,6 +17,10 @@ namespace Goro.Check.Web.Controllers
             string url = "https://" + "open.weixin.qq.com/connect/oauth2/authorize?appid=" + WebConfig.CorpID + "&redirect_uri=" + reurl + "&response_type=code&scope=snsapi_base&agentid=" + WebConfig.AgentId + "&state=STATE#wechat_redirect";
 
             return Redirect(url);
+
+
+            //string redirectUrl = "http://localhost:8003/#/?openId=cyccess";
+            //return Redirect(redirectUrl);
         }
 
 
@@ -60,8 +64,6 @@ namespace Goro.Check.Web.Controllers
 
             return Redirect(redirectUrl);
         }
-
-
 
     }
 }

@@ -31,7 +31,5 @@ namespace Goro.Check.Service.Model
         /// 供应是否审核
         /// </summary>
         public string isPo { get; set; }
-
-
     }
 }

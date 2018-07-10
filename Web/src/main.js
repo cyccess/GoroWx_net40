@@ -6,6 +6,7 @@ import FastClick from 'fastclick'
 import VueRouter from 'vue-router'
 import App from './App'
 import routes from './router/index'
+import store from './store'
 import VueScroller from 'vue-scroller'
 import VueCookies from 'vue-cookies'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -59,8 +60,14 @@ AjaxPlugin.$http.interceptors.response.use(response => {
   return Promise.reject(error);
 });
 
+Vue.filter('money', function (value) {
+  if (!value) return '0.00';
+  value = parseFloat(value);
+  return value.toFixed(2)
+});
+
 router.beforeEach((to, from, next) => {
-  let openId = VueCookies.get("openid");
+  let openId = store.state.openId;
   if (to.meta.requiresAuth && !openId) {
     next({
       path: '/',
@@ -73,15 +80,9 @@ router.beforeEach((to, from, next) => {
   }
 });
 
-Vue.filter('money', function (value) {
-  if (!value) return '0.00';
-  value = parseFloat(value);
-  return value.toFixed(2)
-});
-
-
 /* eslint-disable no-new */
 new Vue({
   router,
+  store,
   render: h => h(App)
 }).$mount('#app-box');
