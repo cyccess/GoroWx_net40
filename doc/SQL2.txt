@@ -1,0 +1,22 @@
+CREATE view [dbo].[tm_v_icinventory] 
+as
+select t2.FNumber as FItemNumber,t2.FName as FItemName,t2.FModel as FItemModel,
+		t3.FName as FStockName,SUM(t1.FQty) as FQty
+from ICInventory t1 left join
+		t_icitem t2 on (t1.fitemid = t2.fitemid) left join
+		t_stock t3 on (t1.fstockid = t3.fitemid) left join
+		t_MeasureUnit t5 on (t2.funitid = t5.fitemid)
+where t1.fqty > 0
+group by t2.FNumber,t2.FName,t2.FModel,t3.FName
+GO
+
+create view [dbo].[tm_v_CreditObject] 
+as
+SELECT a1.fname as FCustName ,b1.fname as FEmpName,
+		SUM(ISNull(FARUNCheckAmount + FARCheckAmount,0))-SUM(ISNull(FREUNCheckAmount+FRECheckAmount,0))-Sum(ISNull((FARCheckRebundAmount + FARUnCheckRebundAmount + FARCheckBundAmount + FARUnCheckBundAmount + FARCheckPrebundAmount + FARUnCheckPrebundAmount),0)) as FAmount 
+From vw_AR_Credit_CUST k1 inner join
+		t_Organization a1 on  k1.FCustomer =a1.FItemID left join
+		t_emp b1 on (a1.femployee = b1.fitemid)
+Group By a1.fname,b1.fname
+
+GO
