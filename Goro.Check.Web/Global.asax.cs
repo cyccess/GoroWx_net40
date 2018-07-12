@@ -1,4 +1,5 @@
-﻿using Goro.Check.Cache;
+﻿using FluentScheduler;
+using Goro.Check.Cache;
 using Goro.Check.Service;
 using System;
 using System.Configuration;
@@ -31,7 +32,11 @@ namespace Goro.Check.Web
             WebConfig.AgentId = ConfigurationManager.AppSettings["AgentId"];
             WebConfig.Secret = ConfigurationManager.AppSettings["Secret"];
 
+            WebConfig.JobInterval = ConfigurationManager.AppSettings["JobInterval"];
+
             CacheService.Init();
+
+            JobManager.Initialize(new TaskRegistry());
         }
 
         protected void Application_BeginRequest(object sender, EventArgs e)

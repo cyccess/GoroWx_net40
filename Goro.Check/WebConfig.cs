@@ -18,6 +18,10 @@ namespace Goro.Check
         /// </summary>
         public static string ConnectionString = string.Empty;
 
+        /// <summary>
+        /// 消息任务间隔秒数
+        /// </summary>
+        public static string JobInterval = string.Empty;
 
         /// 微信Appid
         /// </summary>

@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentScheduler, Version=5.3.0.0, Culture=neutral, PublicKeyToken=b76503528a14ebd1, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentScheduler.5.3.0\lib\net40\FluentScheduler.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,7 +46,9 @@
     <Compile Include="ApiService.cs" />
     <Compile Include="IApiService.cs" />
     <Compile Include="JsTicket.cs" />
+    <Compile Include="MessageJob.cs" />
     <Compile Include="MessageResult.cs" />
+    <Compile Include="TaskRegistry.cs" />
     <Compile Include="Model\FieldDisplayed.cs" />
     <Compile Include="Model\SalesOrder.cs" />
     <Compile Include="Model\SalesOrderDetail.cs" />
@@ -65,6 +70,9 @@
       <Project>{d0f91921-434c-4ce5-bc0d-e445ad1ae80f}</Project>
       <Name>Goro.Check</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

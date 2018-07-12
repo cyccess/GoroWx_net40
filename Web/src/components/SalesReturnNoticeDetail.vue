@@ -8,7 +8,7 @@
       </div>
     </div>
 
-    <div class="btn-wrapper">
+    <div class="btn-wrapper" v-if="userInfo.fUserGroupNumber==='001'||userInfo.fUserGroupNumber==='009'">
       <button @click="modalShow=true" class="btn btn-secondary" type="submit">不同意</button>
       <button @click="agree" class="btn btn-primary" type="submit">同意</button>
     </div>

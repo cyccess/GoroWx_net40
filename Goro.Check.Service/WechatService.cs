@@ -63,19 +63,18 @@ namespace Goro.Check.Service
         }
 
 
-        public static void Send(string touser, string title, string desc, string link)
+        public static void Send(string touser, string title, string desc, string url)
         {
             string accessToken = GetWrokAccessToken();
-
-            string url = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + accessToken;
-
-            var now = DateTime.Now.ToString("yyyy年MM月dd日");
+            string requestUrl = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + accessToken;
+            var now = DateTime.Now.ToString("M月d日");
 
             var textcard = new
             {
                 title,
-                description = "<div class=\"gray\">" + now + "</div><br><div class=\"highlight\">" + desc + "</div>",
-                url = link,
+                //支持使用br标签或者空格来进行换行处理
+                description = "<div class=\"gray\">" + now + "</div> <br><div class=\"highlight\">" + desc + "</div>",
+                url,
                 btntxt = "详情"
             };
 
@@ -89,7 +88,7 @@ namespace Goro.Check.Service
                 textcard
             };
 
-            string res = HttpHelper.Post(url, JsonHelper.Serialize(postJson));
+            string res = HttpHelper.Post(requestUrl, JsonHelper.Serialize(postJson));
         }
 
 
