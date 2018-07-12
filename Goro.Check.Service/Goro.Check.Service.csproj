@@ -48,7 +48,7 @@
     <Compile Include="JsTicket.cs" />
     <Compile Include="MessageJob.cs" />
     <Compile Include="MessageResult.cs" />
-    <Compile Include="TaskRegistry.cs" />
+    <Compile Include="MessageRegistry.cs" />
     <Compile Include="Model\FieldDisplayed.cs" />
     <Compile Include="Model\SalesOrder.cs" />
     <Compile Include="Model\SalesOrderDetail.cs" />

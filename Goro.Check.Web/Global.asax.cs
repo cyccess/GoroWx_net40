@@ -36,7 +36,7 @@ namespace Goro.Check.Web
 
             CacheService.Init();
 
-            JobManager.Initialize(new TaskRegistry());
+            JobManager.Initialize(new MessageRegistry());
         }
 
         protected void Application_BeginRequest(object sender, EventArgs e)

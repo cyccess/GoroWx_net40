@@ -6,9 +6,9 @@ using System.Text;
 
 namespace Goro.Check.Service
 {
-    public class TaskRegistry : Registry
+    public class MessageRegistry : Registry
     {
-        public TaskRegistry()
+        public MessageRegistry()
         {
             Schedule<MessageJob>().ToRunNow().AndEvery(10).Seconds();
         }
