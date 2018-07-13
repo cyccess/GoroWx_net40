@@ -10,7 +10,7 @@ namespace Goro.Check.Service
     {
         public void Execute()
         {
-            ApiService.SendNoticeToGM();
+            ApiService.SendNotice();
         }
     }
 }

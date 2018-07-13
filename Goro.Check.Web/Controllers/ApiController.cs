@@ -6,7 +6,7 @@ namespace Goro.Check.Web.Controllers
 {
     public class ApiController : Controller
     {
-        private ApiService apiService;
+        private IApiService apiService;
 
         public ApiController()
         {

@@ -13,12 +13,6 @@ namespace Goro.Check.Service
 
         string UserOpenIdBinding(string phoneNumber, string openId);
 
-        /// <summary>
-        /// 退货通知单- 根据手机号获取单号和客户
-        /// </summary>
-        /// <param name="phoneNumber"></param>
-        /// <param name="page"></param>
-        /// <returns></returns>
         List<SalesReturnNotice> GetSalesReturnNotice(string phoneNumber, int page);
 
         SalesReturnNoticeDetail GetSalesReturnNoticeDetail(string phoneNumber, string fBillNo);

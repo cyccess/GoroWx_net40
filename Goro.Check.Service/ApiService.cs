@@ -36,9 +36,9 @@ namespace Goro.Check.Service
                     FUserOpenID = u.Field<string>(7)
                 }).FirstOrDefault();
 
-                //entity.FEmpName = "总经理组";
-                //entity.FUserGroupNumber = "002";
-                //entity.FPhoneNumber = "13044444444";
+                entity.FEmpName = "总经理组";
+                entity.FUserGroupNumber = "002";
+                entity.FPhoneNumber = "13044444444";
 
                 return entity;
             }
@@ -61,7 +61,7 @@ namespace Goro.Check.Service
                     new SqlParameter{ ParameterName = "@Msg", Value="", Direction = ParameterDirection.Output, Size=100, SqlDbType = SqlDbType.NVarChar }
                 };
 
-                var res = SqlHelper.ExecuteNonQuery("tm_p_UpdateUserOpenID", sqlParameter);
+                var res = SqlHelper.ExecuteNonQuery(CommandType.StoredProcedure, "tm_p_UpdateUserOpenID", sqlParameter);
                 LoggerHelper.Info("绑定用户[" + phoneNumber + "]，openid:" + openId);
 
                 return sqlParameter[2].Value.ToString();
@@ -89,7 +89,7 @@ namespace Goro.Check.Service
                 };
 
                 //退货通知单-根据手机号获取单号和客户
-                var dt = SqlHelper.ExecuteDataTable("tm_p_GetSalesReturnNotice", sqlParameter);
+                var dt = SqlHelper.ExecuteDataTable(CommandType.StoredProcedure, "tm_p_GetSalesReturnNotice", sqlParameter);
 
                 int count = (page - 1) * 20;
                 var salesReturnNotices = dt.AsEnumerable().Select(r => new SalesReturnNotice
@@ -169,7 +169,7 @@ namespace Goro.Check.Service
                    new SqlParameter{ ParameterName = "@BillTypeNumber", Value = billTypeNumber, SqlDbType = SqlDbType.NVarChar },
                 };
 
-                var dt = SqlHelper.ExecuteDataTable("tm_p_GetFieldDisplayed", sqlParameter);
+                var dt = SqlHelper.ExecuteDataTable(CommandType.StoredProcedure, "tm_p_GetFieldDisplayed", sqlParameter);
                 var fields = dt.AsEnumerable().Select(r => new FieldDisplayed
                 {
                     FFieldName = GetFirstLowerStr(r["FFieldName"].ToString()),
@@ -242,14 +242,14 @@ namespace Goro.Check.Service
                 if (cmdText == "")
                     return "用户分组未找到！";
 
-                SqlHelper.ExecuteNonQuery(cmdText, sqlParameter);
+                SqlHelper.ExecuteNonQuery(CommandType.StoredProcedure, cmdText, sqlParameter);
                 var msg = sqlParameter.Last().Value.ToString();
                 if (msg == "OK")
                 {
                     if (userGroupNumber == "001")
                     {
                         toUser = GetUserIdByUserGroup("002,008"); // 总经理，制单人
-                        title = "退货通知单[" + billNo + "]" + (result == "Y" ? " 已通过销售总监审核" : " 未通过销售总监审核");
+                        title = "退货通知单[" + billNo + "]" + (result == "Y" ? " 销售总监已审核通过" : " 销售总监未审核通过");
                         WechatService.Send(toUser, title, reason, noticeDetailUrl);
                         // 如果同意，发送微信通知给质检组
                         if (result == "Y")
@@ -262,7 +262,7 @@ namespace Goro.Check.Service
                     if (userGroupNumber == "009")
                     {
                         toUser = GetUserIdByUserGroup("001,002,008");//销售总监、总经理和制单人
-                        title = "退货通知单[" + billNo + "]" + (result == "Y" ? " 已通过质检组审核" : " 未通过质检组审核");
+                        title = "退货通知单[" + billNo + "]" + (result == "Y" ? " 已通过质检审核" : " 未通过质检审核");
                         WechatService.Send(toUser, title, reason, noticeDetailUrl);
                     }
                 }
@@ -292,7 +292,7 @@ namespace Goro.Check.Service
                 };
 
                 //退货通知单-根据手机号获取单号和客户
-                var dt = SqlHelper.ExecuteDataTable("tm_p_GetSalesOrderList", sqlParameter);
+                var dt = SqlHelper.ExecuteDataTable(CommandType.StoredProcedure, "tm_p_GetSalesOrderList", sqlParameter);
 
                 int count = (page - 1) * 20;
                 var salesOrders = dt.AsEnumerable().Select(r => new SalesOrder
@@ -443,7 +443,7 @@ namespace Goro.Check.Service
             }
             catch (Exception e)
             {
-                LoggerHelper.Info("销售单审核【" + model.userGroupNumber + "：" + model.phoneNumber + "】" + e);
+                LoggerHelper.Info("销售单审核【" + model.billNo + "：" + model.phoneNumber + "】" + e);
                 return "销售单审核失败";
             }
         }
@@ -453,7 +453,7 @@ namespace Goro.Check.Service
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        private string UpdateSalesOrderGM(SalesOrderViewModel model)
+        private static string UpdateSalesOrderGM(SalesOrderViewModel model)
         {
             var sqlParameter = new List<SqlParameter>()
             {
@@ -464,37 +464,30 @@ namespace Goro.Check.Service
                 new SqlParameter { ParameterName = "@Msg", Value = "", Direction = ParameterDirection.Output, Size = 100, SqlDbType = SqlDbType.NVarChar }
             };
 
-            try
-            {
-                SqlHelper.ExecuteNonQuery("tm_p_UpdateSalesOrderGM", sqlParameter.ToArray());
-                var msg = sqlParameter.Last().Value.ToString();
+            SqlHelper.ExecuteNonQuery(CommandType.StoredProcedure, "tm_p_UpdateSalesOrderGM", sqlParameter.ToArray());
+            var msg = sqlParameter.Last().Value.ToString();
 
-                if (msg == "OK")
+            if (msg == "OK")
+            {
+                string toUser = GetUserIdByUserGroup("008"); //制单人组
+                toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
+                string title = "销售订单[" + model.billNo + "]已特批";
+                string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
+                WechatService.Send(toUser, title, model.reason, noticeDetailUrl);
+
+                if (model.result == "Y")
                 {
-                    string toUser = GetUserIdByUserGroup("007,008"); //业务员组,制单人组
-                    string title = "销售订单[" + model.billNo + "]总经理" + (model.result == "Y" ? " 已通过审核" : " 未通过审核");
-                    string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
+                    toUser = GetUserIdByUserGroup("004"); //通知生产组
+                    title = "您有销售订单[" + model.billNo + "]需要确认";
                     WechatService.Send(toUser, title, model.reason, noticeDetailUrl);
-
-                    if (model.result == "Y")
-                    {
-                        toUser = GetUserIdByUserGroup("004"); //通知生产组
-                        title = "您有销售订单[" + model.billNo + "]需要确认";
-                        WechatService.Send(toUser, title, model.reason, noticeDetailUrl);
-                    }
                 }
+            }
 
-                LoggerHelper.Info("销售单审核,总经理审核更新【" + model.billNo + "：" + model.phoneNumber + "】" + msg);
-                return msg;
-            }
-            catch (Exception e)
-            {
-                LoggerHelper.Info("销售单审核,总经理审核【" + model.billNo + "：" + model.phoneNumber + "】" + e);
-                return "审核失败！";
-            }
+            LoggerHelper.Info("销售单审核,总经理审核更新【" + model.billNo + "：" + model.phoneNumber + "】" + msg);
+            return msg;
         }
 
-        private string UpdateSalesOrderPD(SalesOrderViewModel model)
+        private static string UpdateSalesOrderPD(SalesOrderViewModel model)
         {
             var sqlParameter = new List<SqlParameter>()
             {
@@ -521,7 +514,7 @@ namespace Goro.Check.Service
 
             sqlParameter.Add(new SqlParameter { ParameterName = "@Msg", Value = "", Direction = ParameterDirection.Output, Size = 100, SqlDbType = SqlDbType.NVarChar });
 
-            var res = SqlHelper.ExecuteNonQuery(cmdText, sqlParameter.ToArray());
+            var res = SqlHelper.ExecuteNonQuery(CommandType.StoredProcedure, cmdText, sqlParameter.ToArray());
             var msg = sqlParameter.Last().Value.ToString();
 
             if (msg == "OK")
@@ -532,14 +525,16 @@ namespace Goro.Check.Service
 
                 if (model.result == "Y")
                 {
-                    toUser = GetUserIdByUserGroup("007,008");//业务员组,制单人组
-                    title = "销售订单[" + model.billNo + "]已通过生产组审核";
+                    toUser = GetUserIdByUserGroup("008");//制单人组
+                    toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
+                    title = "销售订单[" + model.billNo + "]已通过生产已确认";
                     WechatService.Send(toUser, title, model.reason, noticeDetailUrl);
                 }
                 else
                 {
-                    toUser = GetUserIdByUserGroup("002,007,008");//总经理,业务员组,制单人组
-                    title = "销售订单[" + model.billNo + "]未通过生产组审核";
+                    toUser = GetUserIdByUserGroup("002,008");//总经理,制单人组
+                    toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
+                    title = "销售订单[" + model.billNo + "]生产未确认";
                     WechatService.Send(toUser, title, model.reason, noticeDetailUrl);
 
                     if (model.isMe == "1")
@@ -562,7 +557,7 @@ namespace Goro.Check.Service
             return msg;
         }
 
-        private string UpdateSalesOrderME(SalesOrderViewModel model)
+        private static string UpdateSalesOrderME(SalesOrderViewModel model)
         {
             var sqlParameter = new List<SqlParameter>()
             {
@@ -574,22 +569,23 @@ namespace Goro.Check.Service
 
             string cmdText = "tm_p_UpdateSalesOrderME";
 
-            var res = SqlHelper.ExecuteNonQuery(cmdText, sqlParameter.ToArray());
+            var res = SqlHelper.ExecuteNonQuery(CommandType.StoredProcedure, cmdText, sqlParameter.ToArray());
             var msg = sqlParameter.Last().Value.ToString();
 
             if (msg == "OK")
             {
-                string toUser = GetUserIdByUserGroup("002,007,008"); ;//总经理,业务员组,制单人组
+                string toUser = GetUserIdByUserGroup("002,008"); ;//总经理,制单人组
+                toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
-                WechatService.Send(toUser, "销售订单[" + model.billNo + "]工艺组已回复", model.reason, noticeDetailUrl);
+                WechatService.Send(toUser, "销售订单[" + model.billNo + "]工艺已回复", model.reason, noticeDetailUrl);
             }
 
-            LoggerHelper.Info("销售订单[" + model.billNo + "]工艺组已回复：" + msg);
+            LoggerHelper.Info("销售订单[" + model.billNo + "]工艺已回复：" + msg);
 
             return msg;
         }
 
-        private string UpdateSalesOrderPO(SalesOrderViewModel model)
+        private static string UpdateSalesOrderPO(SalesOrderViewModel model)
         {
             var sqlParameter = new List<SqlParameter>()
             {
@@ -601,34 +597,101 @@ namespace Goro.Check.Service
 
             string cmdText = "tm_p_UpdateSalesOrderPO";
 
-            var res = SqlHelper.ExecuteNonQuery(cmdText, sqlParameter.ToArray());
+            var res = SqlHelper.ExecuteNonQuery(CommandType.StoredProcedure, cmdText, sqlParameter.ToArray());
             var msg = sqlParameter.Last().Value.ToString();
 
             if (msg == "OK")
             {
-                string toUser = GetUserIdByUserGroup("002,007,008"); ;//总经理,业务员组,制单人组
+                string toUser = GetUserIdByUserGroup("002,008"); ;//总经理,业务员组,制单人组
+                toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
-                WechatService.Send(toUser, "销售订单[" + model.billNo + "]供应组已回复", model.reason, noticeDetailUrl);
+                WechatService.Send(toUser, "销售订单[" + model.billNo + "]供应已回复", model.reason, noticeDetailUrl);
             }
-            LoggerHelper.Info("销售订单[" + model.billNo + "]供应组已回复：" + msg);
+            LoggerHelper.Info("销售订单[" + model.billNo + "]供应已回复：" + msg);
 
             return msg;
         }
 
-        /// <summary>
-        /// 通知总经理有新的销售订单
-        /// </summary>
-        public static void SendNoticeToGM()
+        public static void SendNotice()
         {
-            //您有销售订单[XXX(订单号)]由于XXX(总经理审核原因)原因需要审核
-
-            string cmdText = "select top 1 FGMCheckCause from tm_v_SeOrderList where ";
-
-            //销售总监内容：您有退货通知单[单号]需要审核
-
-            WechatService.Send("cyccess", "您有销售订单[B0023]待审核", "由于XXX(总经理审核原因)需要审核", "http://wx.goro.com.cn");
+            try
+            {
+                SendNoticeToGM();
+                SendNoticeToPD();
+                SendNoticeToCSO();
+            }
+            catch (Exception e)
+            {
+                LoggerHelper.Info("消息发送错误：" + e);
+            }
         }
 
+        /// <summary>
+        /// 销售订单 - 通知总经理
+        /// </summary>
+        private static void SendNoticeToGM()
+        {
+            string cmdText = "select top 1 FBillNo,FGMCheckCause from tm_v_SeOrderList where FISGM=1 and FISGMSendMessage=0";
+            var dt = SqlHelper.ExecuteDataTable(CommandType.Text, cmdText);
+            var res = dt.AsEnumerable()
+                .Select(o => new { FBillNo = o["FBillNo"], FGMCheckCause = o["FGMCheckCause"] })
+                .SingleOrDefault();
+
+            if (res != null)
+            {
+                // 更新消息状态
+                string sql = "update seorder set FHeadSelfs0165=1 where FBillNo=" + res.FBillNo;
+                SqlHelper.ExecuteNonQuery(CommandType.Text, sql);
+
+                string toUser = GetUserIdByUserGroup("002"); // 总经理组
+                string title = "您有销售订单[" + res.FBillNo + "]需要审核";
+                string desc = "由于" + res.FGMCheckCause + "需要审核";
+                string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + res.FBillNo;
+                WechatService.Send("cyccess", title, desc, noticeDetailUrl);
+            }
+        }
+
+        /// <summary>
+        /// 销售单 - 不需要总经理审核的订单，通知生产
+        /// </summary>
+        private static void SendNoticeToPD()
+        {
+            string cmdText = "select top 1 FBillNo from tm_v_SeOrderList where FISGM=0 and FISPDSendMessage=0";
+            var fBillNo = SqlHelper.ExecuteScalar(CommandType.Text, cmdText);
+
+            if (fBillNo != null)
+            {
+                // 更新消息状态
+                string sql = "update seorder set FHeadSelfs0166=1 where FBillNo=" + fBillNo;
+                SqlHelper.ExecuteNonQuery(CommandType.Text, sql);
+
+                string toUser = GetUserIdByUserGroup("004"); // 生产组
+                string title = "您有销售订单[" + fBillNo + "]需要确认";
+                string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + fBillNo;
+                WechatService.Send(toUser, title, "", noticeDetailUrl);
+            }
+        }
+
+        /// <summary>
+        /// 退货通知单，销售总监消息通知
+        /// </summary>
+        private static void SendNoticeToCSO()
+        {
+            string cmdText = "select top 1 FBillNo from tm_v_SalesReturnNotice where FISCSOSendMessage=0";
+            var fBillNo = SqlHelper.ExecuteScalar(CommandType.Text, cmdText);
+
+            if (fBillNo != null)
+            {
+                // 更新消息状态
+                string sql = "update SEOutStock set FHeadSelfs1256=1 where FBillNo=" + fBillNo;
+                SqlHelper.ExecuteNonQuery(CommandType.Text, sql);
+
+                string toUser = GetUserIdByUserGroup("001"); // 销售总监组
+                string title = "您有退货通知单[" + fBillNo + "]需要审核";
+                string noticeDetailUrl = WebConfig.WebHost + "/#/salesReturnNoticeDetail?billNo=" + fBillNo;
+                WechatService.Send(toUser, title, "", noticeDetailUrl);
+            }
+        }
 
 
         /// <summary>
@@ -636,7 +699,7 @@ namespace Goro.Check.Service
         /// </summary>
         /// <param name="userGroupNumber">分组编号</param>
         /// <returns></returns>
-        private string GetUserIdByUserGroup(string userGroupNumber)
+        private static string GetUserIdByUserGroup(string userGroupNumber)
         {
             SqlParameter[] sqlParameter = new SqlParameter[]
             {
@@ -651,6 +714,22 @@ namespace Goro.Check.Service
                 .Select(u => u["FUserOpenID"]);
 
             return string.Join("|", rowCollection);
+        }
+
+        /// <summary>
+        /// 获取销售单制单人员的用户ID
+        /// </summary>
+        /// <param name="fBillNo"></param>
+        /// <returns></returns>
+        private static string GetSeOrderUserId(string fBillNo)
+        {
+            string sql = "select top 1 b.FUserOpenID from tm_v_SeOrderList a inner join tm_v_UserInfo b on a.FEmpName=b.FEmpName where a.FBillNo=" + fBillNo;
+            var userId = SqlHelper.ExecuteScalar(CommandType.Text, sql);
+
+            if (userId != null)
+                return "|" + userId.ToString();
+
+            return "";
         }
     }
 }
