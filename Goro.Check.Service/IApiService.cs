@@ -13,6 +13,12 @@ namespace Goro.Check.Service
 
         string UserOpenIdBinding(string phoneNumber, string openId);
 
+        List<SalesOrder> QueryOrderList(string fBillNo, int page);
+
+        List<StockViewModel> QueryStockList(string itemName, int page);
+
+        List<CreditViewModel> QueryCreditList(string custName, int page);
+
         List<SalesReturnNotice> GetSalesReturnNotice(string phoneNumber, int page);
 
         SalesReturnNoticeDetail GetSalesReturnNoticeDetail(string phoneNumber, string fBillNo);

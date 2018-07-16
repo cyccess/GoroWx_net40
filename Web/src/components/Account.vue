@@ -20,6 +20,7 @@
 
 <script>
   import {mapMutations} from 'vuex'
+  import {getStore} from "../utils"
 
   export default {
     data() {
@@ -82,13 +83,19 @@
       setState(model) {
         this.setUserinfo(model);
         this.setOpenid(model.fUserOpenID);
-        let groupNo = model.fUserGroupNumber; //用户分组编号
-        if (groupNo === "001" || groupNo === "009") {
-          this.$router.push('/salesReturnNotice');
+        // let groupNo = model.fUserGroupNumber; //用户分组编号
+
+        let path = getStore("redirect");
+        if(path){
+          this.$router.push(path);
         }
-        else {
-          this.$router.push('/salesOrder');
-        }
+
+        // if (groupNo === "001" || groupNo === "009") {
+        //   this.$router.push('/salesReturnNotice');
+        // }
+        // else {
+        //   this.$router.push('/salesOrder');
+        // }
       }
     },
     beforeRouteEnter(to, from, next) {

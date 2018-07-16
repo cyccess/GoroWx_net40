@@ -49,12 +49,14 @@
     <Compile Include="MessageJob.cs" />
     <Compile Include="MessageResult.cs" />
     <Compile Include="MessageRegistry.cs" />
+    <Compile Include="Model\CreditViewModel.cs" />
     <Compile Include="Model\FieldDisplayed.cs" />
     <Compile Include="Model\SalesOrder.cs" />
     <Compile Include="Model\SalesOrderDetail.cs" />
     <Compile Include="Model\SalesOrderViewModel.cs" />
     <Compile Include="Model\SalesReturnNotice.cs" />
     <Compile Include="Model\SalesReturnNoticeDetail.cs" />
+    <Compile Include="Model\StockViewModel.cs" />
     <Compile Include="Model\UserInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WechatService.cs" />

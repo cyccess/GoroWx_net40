@@ -4,17 +4,25 @@
 
 <script>
   import {mapMutations} from 'vuex'
+  import {setStore, getStore} from "../utils"
 
   export default {
     data() {
-      return {}
+      return {
+        openId: '',
+        redirect: ''
+      }
     },
-
     methods: {
       ...mapMutations([
         'setUserinfo', 'setOpenid'
       ]),
       async autoAuth() {
+
+        if (this.redirect) {
+          setStore("redirect", this.redirect)
+        }
+
         // 如果本地没有授权信息，并且不是获取授权后跳转到此页面的，将跳转进行授权操作
         if (!window.localStorage.getItem('openid') && !this.openId) {
           // window.location.href = "http://localhost:8002/Authorize";
@@ -35,18 +43,25 @@
       setState(model) {
         this.setUserinfo(model);
         this.setOpenid(model.fUserOpenID);
-        let groupNo = model.fUserGroupNumber; //用户分组编号
-        if (groupNo === "001" || groupNo === "009") {
-          this.$router.push('/salesReturnNotice');
+        // let groupNo = model.fUserGroupNumber; //用户分组编号
+        let path = getStore("redirect");
+        console.log("path:"+path);
+        if (path) {
+          this.$router.push(path);
         }
-        else {
-          this.$router.push('/salesOrder');
-        }
+
+        // if (groupNo === "001" || groupNo === "009") {
+        //   this.$router.push('/salesReturnNotice');
+        // }
+        // else {
+        //   this.$router.push('/salesOrder');
+        // }
       }
     },
     beforeRouteEnter(to, from, next) {
       next(vm => {
         vm.openId = vm.$route.query.openId;
+        vm.redirect = vm.$route.query.redirect;
         vm.autoAuth();
       });
     }

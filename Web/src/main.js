@@ -9,9 +9,9 @@ import routes from './router/index'
 import store from './store'
 import VueScroller from 'vue-scroller'
 import VueCookies from 'vue-cookies'
-import 'bootstrap/dist/css/bootstrap.min.css'
 
 import {AjaxPlugin, AlertPlugin, ConfirmPlugin, ToastPlugin} from 'vux'
+import {setStore} from "./utils"
 
 Vue.use(VueRouter);
 Vue.use(VueScroller);

@@ -41,6 +41,12 @@ namespace Goro.Check.Web.Controllers
             return Json(model);
         }
 
+        /// <summary>
+        /// 退货通知单
+        /// </summary>
+        /// <param name="phoneNumber"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
         public ActionResult SalesReturnNotice(string phoneNumber, int page = 1)
         {
             var res = apiService.GetSalesReturnNotice(phoneNumber, page);
@@ -128,6 +134,60 @@ namespace Goro.Check.Web.Controllers
             data.Message = res;
 
             return Json(data);
+        }
+
+        /// <summary>
+        /// 订单查询
+        /// </summary>
+        /// <param name="fBillNo"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public ActionResult QueryOrderList(string fBillNo, int page = 1)
+        {
+            var list = apiService.QueryOrderList(fBillNo, page);
+
+            var model = new ReturnModel();
+
+            if (list.Count == 0) model.Code = 0;
+
+            model.Data = list;
+            return Json(model);
+        }
+
+        /// <summary>
+        /// 库存查询
+        /// </summary>
+        /// <param name="itemName"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public ActionResult QueryStockList(string itemName, int page = 1)
+        {
+            var list = apiService.QueryStockList(itemName, page);
+
+            var model = new ReturnModel();
+
+            if (list.Count == 0) model.Code = 0;
+
+            model.Data = list;
+            return Json(model);
+        }
+
+        /// <summary>
+        /// 信用额度查询
+        /// </summary>
+        /// <param name="custName"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public ActionResult QueryCreditList(string custName, int page = 1)
+        {
+            var list = apiService.QueryCreditList(custName, page);
+
+            var model = new ReturnModel();
+
+            if (list.Count == 0) model.Code = 0;
+
+            model.Data = list;
+            return Json(model);
         }
     }
 }

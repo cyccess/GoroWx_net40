@@ -36,9 +36,9 @@ namespace Goro.Check.Service
                     FUserOpenID = u.Field<string>(7)
                 }).FirstOrDefault();
 
-                entity.FEmpName = "总经理组";
-                entity.FUserGroupNumber = "002";
-                entity.FPhoneNumber = "13044444444";
+                //entity.FEmpName = "总经理组";
+                //entity.FUserGroupNumber = "002";
+                //entity.FPhoneNumber = "13044444444";
 
                 return entity;
             }
@@ -74,6 +74,136 @@ namespace Goro.Check.Service
         }
 
         /// <summary>
+        /// 查询订单
+        /// </summary>
+        /// <param name="fBillNo"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public List<SalesOrder> QueryOrderList(string fBillNo, int page)
+        {
+            try
+            {
+                int pageSize = 10;
+                var sqlParameter = new List<SqlParameter>()
+                {
+                    new SqlParameter("@PageIndex",(page - 1) * pageSize),
+                    new SqlParameter("@PageSize",page * pageSize)
+                };
+
+                string sql = "select ROW_NUMBER() over(order by FDate desc) rownumber, FBillNo,FCustName from tm_v_SeOrderList where 1=1";
+
+                if (!string.IsNullOrEmpty(fBillNo))
+                {
+                    sql += " and FBillNo=@FBillNo";
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FBillNo", Value = fBillNo, SqlDbType = SqlDbType.NVarChar });
+                }
+
+                string cmdText = "select* from(" + sql + ") as t"
+                           + " where rownumber>@PageIndex and rownumber<=@PageSize";
+
+                var res = SqlHelper.ExecuteDataTable(CommandType.Text, cmdText, sqlParameter.ToArray());
+
+                var list = res.AsEnumerable().Select(row => new SalesOrder
+                {
+                    Id = Convert.ToInt32(row["rownumber"]),
+                    FBillNo = row["FBillNo"].ToString(),
+                    FCustName = row["FCustName"].ToString()
+
+                }).ToList();
+
+                return list;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<StockViewModel> QueryStockList(string itemName, int page)
+        {
+            try
+            {
+                int pageSize = 10;
+                var sqlParameter = new List<SqlParameter>()
+                {
+                    new SqlParameter("@PageIndex",(page - 1) * pageSize),
+                    new SqlParameter("@PageSize",page * pageSize)
+                };
+
+                string sql = "select ROW_NUMBER() over(order by FItemNumber) rownumber, FItemNumber,FItemName,FItemModel,FStockName,FQty from tm_v_icinventory where 1=1";
+
+                if (!string.IsNullOrEmpty(itemName))
+                {
+                    sql += " and FItemName like @FItemName";
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FItemName", Value = "%" + itemName + "%", SqlDbType = SqlDbType.NVarChar });
+                }
+
+                string cmdText = "select* from(" + sql + ") as t"
+                           + " where rownumber>@PageIndex and rownumber<=@PageSize";
+
+                var res = SqlHelper.ExecuteDataTable(CommandType.Text, cmdText, sqlParameter.ToArray());
+
+                var list = res.AsEnumerable().Select(row => new StockViewModel
+                {
+                    Id = Convert.ToInt32(row["rownumber"]),
+                    FItemNumber = row["FItemNumber"].ToString(),
+                    FItemName = row["FItemName"].ToString(),
+                    FItemModel = row["FItemModel"].ToString(),
+                    FStockName = row["FStockName"].ToString(),
+                    FQty = Convert.ToDecimal(row["FQty"])
+                }).ToList();
+
+                return list;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<CreditViewModel> QueryCreditList(string custName, int page)
+        {
+            try
+            {
+                int pageSize = 10;
+                var sqlParameter = new List<SqlParameter>()
+                {
+                    new SqlParameter("@PageIndex",(page - 1) * pageSize),
+                    new SqlParameter("@PageSize",page * pageSize)
+                };
+
+                string sql = "select ROW_NUMBER() over(order by FCustName) rownumber, FCustName,FAmount,FEmpName from tm_v_CreditObject where 1=1";
+
+                if (!string.IsNullOrEmpty(custName))
+                {
+                    sql += " and FCustName like @FCustName";
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FCustName", Value = "%" + custName + "%", SqlDbType = SqlDbType.NVarChar });
+                }
+
+                string cmdText = "select* from(" + sql + ") as t"
+                           + " where rownumber>@PageIndex and rownumber<=@PageSize";
+
+                var res = SqlHelper.ExecuteDataTable(CommandType.Text, cmdText, sqlParameter.ToArray());
+
+                var list = res.AsEnumerable().Select(row => new CreditViewModel
+                {
+                    Id = Convert.ToInt32(row["rownumber"]),
+                    FCustName = row["FCustName"].ToString(),
+                    FAmount = Convert.ToDecimal(row["FAmount"]),
+                    FEmpName = row["FEmpName"].ToString(),
+
+                }).ToList();
+
+                return list;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
+        /// <summary>
         /// 退货通知单
         /// </summary>
         /// <param name="phoneNumber"></param>
@@ -91,7 +221,7 @@ namespace Goro.Check.Service
                 //退货通知单-根据手机号获取单号和客户
                 var dt = SqlHelper.ExecuteDataTable(CommandType.StoredProcedure, "tm_p_GetSalesReturnNotice", sqlParameter);
 
-                int count = (page - 1) * 20;
+                int count = (page - 1) * 10;
                 var salesReturnNotices = dt.AsEnumerable().Select(r => new SalesReturnNotice
                 {
                     FBillNo = r[0].ToString(),
@@ -248,7 +378,7 @@ namespace Goro.Check.Service
                 {
                     if (userGroupNumber == "001")
                     {
-                        toUser = GetUserIdByUserGroup("002,008"); // 总经理，制单人
+                        toUser = GetUserIdByUserGroup("002", "008"); // 总经理，制单人
                         title = "退货通知单[" + billNo + "]" + (result == "Y" ? " 销售总监已审核通过" : " 销售总监未审核通过");
                         WechatService.Send(toUser, title, reason, noticeDetailUrl);
                         // 如果同意，发送微信通知给质检组
@@ -261,7 +391,7 @@ namespace Goro.Check.Service
                     }
                     if (userGroupNumber == "009")
                     {
-                        toUser = GetUserIdByUserGroup("001,002,008");//销售总监、总经理和制单人
+                        toUser = GetUserIdByUserGroup("001", "002", "008");//销售总监、总经理和制单人
                         title = "退货通知单[" + billNo + "]" + (result == "Y" ? " 已通过质检审核" : " 未通过质检审核");
                         WechatService.Send(toUser, title, reason, noticeDetailUrl);
                     }
@@ -532,7 +662,7 @@ namespace Goro.Check.Service
                 }
                 else
                 {
-                    toUser = GetUserIdByUserGroup("002,008");//总经理,制单人组
+                    toUser = GetUserIdByUserGroup("002", "008");//总经理,制单人组
                     toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
                     title = "销售订单[" + model.billNo + "]生产未确认";
                     WechatService.Send(toUser, title, model.reason, noticeDetailUrl);
@@ -574,7 +704,7 @@ namespace Goro.Check.Service
 
             if (msg == "OK")
             {
-                string toUser = GetUserIdByUserGroup("002,008"); ;//总经理,制单人组
+                string toUser = GetUserIdByUserGroup("002", "008"); ;//总经理,制单人组
                 toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
                 WechatService.Send(toUser, "销售订单[" + model.billNo + "]工艺已回复", model.reason, noticeDetailUrl);
@@ -602,7 +732,7 @@ namespace Goro.Check.Service
 
             if (msg == "OK")
             {
-                string toUser = GetUserIdByUserGroup("002,008"); ;//总经理,业务员组,制单人组
+                string toUser = GetUserIdByUserGroup("002", "008"); ;//总经理,业务员组,制单人组
                 toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
                 WechatService.Send(toUser, "销售订单[" + model.billNo + "]供应已回复", model.reason, noticeDetailUrl);
@@ -647,7 +777,7 @@ namespace Goro.Check.Service
                 string title = "您有销售订单[" + res.FBillNo + "]需要审核";
                 string desc = "由于" + res.FGMCheckCause + "需要审核";
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + res.FBillNo;
-                WechatService.Send("cyccess", title, desc, noticeDetailUrl);
+                WechatService.Send(toUser, title, desc, noticeDetailUrl);
             }
         }
 
@@ -699,15 +829,20 @@ namespace Goro.Check.Service
         /// </summary>
         /// <param name="userGroupNumber">分组编号</param>
         /// <returns></returns>
-        private static string GetUserIdByUserGroup(string userGroupNumber)
+        private static string GetUserIdByUserGroup(params string[] userGroupNumber)
         {
-            SqlParameter[] sqlParameter = new SqlParameter[]
-            {
-                new SqlParameter{ ParameterName = "@UserGroupNumber", Value = userGroupNumber, SqlDbType = SqlDbType.NVarChar }
-            };
+            var sqlParameter = new List<SqlParameter>();
 
-            string sql = "select FUserOpenID from tm_v_UserInfo where FUserGroupNumber in(@UserGroupNumber)";
-            var res = SqlHelper.ExecuteDataTable(CommandType.Text, sql, sqlParameter);
+            List<string> parameter = new List<string>();
+            for (int i = 0; i < userGroupNumber.Length; i++)
+            {
+                sqlParameter.Add(new SqlParameter("@Group" + i, userGroupNumber[i]));
+                parameter.Add("@Group" + i);
+            }
+
+            string sql = "select FUserOpenID from tm_v_UserInfo where FUserGroupNumber in(" + string.Join(",", parameter) + ")";
+
+            var res = SqlHelper.ExecuteDataTable(CommandType.Text, sql, sqlParameter.ToArray());
 
             var rowCollection = res.AsEnumerable()
                 .Where(u => u["FUserOpenID"] != DBNull.Value)
@@ -723,8 +858,10 @@ namespace Goro.Check.Service
         /// <returns></returns>
         private static string GetSeOrderUserId(string fBillNo)
         {
-            string sql = "select top 1 b.FUserOpenID from tm_v_SeOrderList a inner join tm_v_UserInfo b on a.FEmpName=b.FEmpName where a.FBillNo=" + fBillNo;
-            var userId = SqlHelper.ExecuteScalar(CommandType.Text, sql);
+            string sql = "select top 1 b.FUserOpenID from tm_v_SeOrderList a inner join tm_v_UserInfo b on a.FEmpName=b.FEmpName where a.FBillNo=@FBillNo";
+            var userId = SqlHelper.ExecuteScalar(CommandType.Text, sql, new SqlParameter("@FBillNo", fBillNo));
+
+            LoggerHelper.Info("获取销售单制单人员的用户ID:" + userId);
 
             if (userId != null)
                 return "|" + userId.ToString();
