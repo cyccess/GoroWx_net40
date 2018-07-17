@@ -117,6 +117,7 @@
       height: 3.06667rem;
       line-height: 3.06667rem;
       margin-right: .4rem;
+      overflow: hidden;
     }
     .custom {
       padding: .93333rem 0;
