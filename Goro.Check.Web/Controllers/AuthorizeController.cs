@@ -12,22 +12,22 @@ namespace Goro.Check.Web.Controllers
     {
         public ActionResult Index()
         {
-            //string reurl = Server.UrlEncode(WebConfig.WebHost + "/Authorize/WxRedirect");
+            string reurl = Server.UrlEncode(WebConfig.WebHost + "/Authorize/WxRedirect");
 
-            //string url = "https://" + "open.weixin.qq.com/connect/oauth2/authorize?appid=" + WebConfig.CorpID + "&redirect_uri=" + reurl + "&response_type=code&scope=snsapi_base&agentid=" + WebConfig.AgentId + "&state=STATE#wechat_redirect";
+            string url = "https://" + "open.weixin.qq.com/connect/oauth2/authorize?appid=" + WebConfig.CorpID + "&redirect_uri=" + reurl + "&response_type=code&scope=snsapi_base&agentid=" + WebConfig.AgentId + "&state=STATE#wechat_redirect";
 
-            //return Redirect(url);
+            return Redirect(url);
 
 
-            string redirectUrl = "http://localhost:8003/#/?openId=cyccess";
-            return Redirect(redirectUrl);
+            //string redirectUrl = "http://localhost:8003/#/?openId=cyccess";
+            //return Redirect(redirectUrl);
         }
 
 
         public ActionResult WxRedirect(string code)
         {
             LoggerHelper.Info("code:" + code);
-         
+
             string access_token = WechatService.GetWrokAccessToken();
             string url = "https://" + "qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=" + access_token + "&code=" + code;
             var token = HttpHelper.Get<WechatUserInfo>(url);
@@ -48,7 +48,7 @@ namespace Goro.Check.Web.Controllers
             return Redirect(url);
         }
 
-        
+
         public ActionResult WxRedirect1(string code)
         {
             LoggerHelper.Info("微信登录code:" + code);

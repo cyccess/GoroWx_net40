@@ -449,12 +449,19 @@ namespace Goro.Check.Service
             }
         }
 
-        public SalesOrderDetail GetSalesOrderDetail(string phoneNumber, string fBillNo)
+        /// <summary>
+        /// 获取订单详情
+        /// </summary>
+        /// <param name="phoneNumber"></param>
+        /// <param name="fBillNo"></param>
+        /// <param name="billTypeNumber">001 销售订单、 002 退货通知单，默认值为001</param>
+        /// <returns></returns>
+        public SalesOrderDetail GetSalesOrderDetail(string phoneNumber, string fBillNo, string billTypeNumber = "001")
         {
             try
             {
                 SalesOrderDetail salesOrder = new SalesOrderDetail();
-                var fields = GetUserGroupFieldDisplayed(phoneNumber, "001");
+                var fields = GetUserGroupFieldDisplayed(phoneNumber, billTypeNumber);
 
                 salesOrder.Field = fields;
                 var field = string.Join(",", fields.Select(f => f.FFieldName).ToArray());

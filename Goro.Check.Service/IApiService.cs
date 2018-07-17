@@ -27,7 +27,7 @@ namespace Goro.Check.Service
 
         List<SalesOrder> GetSalesOrderList(string phoneNumber, int page);
 
-        SalesOrderDetail GetSalesOrderDetail(string phoneNumber, string fBillNo);
+        SalesOrderDetail GetSalesOrderDetail(string phoneNumber, string fBillNo, string billTypeNumber = "001");
 
         string UpdateSalesOrder(SalesOrderViewModel model);
     }

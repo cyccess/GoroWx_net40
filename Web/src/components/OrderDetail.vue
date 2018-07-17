@@ -20,7 +20,7 @@
   export default {
     data() {
       return {
-        fBillNo:'',
+        fBillNo: '',
         model: {},
         field: []
       }
@@ -36,10 +36,25 @@
     },
     methods: {
       async getData() {
-        let res = await this.$http.post('/api/SalesOrderDetail', {phoneNumber: this.userInfo.fPhoneNumber, fBillNo: this.billNo});
+        let args = {
+          billTypeNumber: '',
+          phoneNumber: this.userInfo.fPhoneNumber,
+          fBillNo: this.billNo
+        };
 
-        this.model = res.data.order[0];
-        this.field = res.data.field
+        if (this.userInfo.fUserGroupNumber === '001' || this.userInfo.fUserGroupNumber === '009') {
+          args.billTypeNumber = '002'; // 退货通知单
+        }
+        else {
+          args.billTypeNumber = '001'; // 销售单
+        }
+
+        let res = await this.$http.post('/api/SalesOrderDetail', args);
+
+        if (res.data) {
+          this.model = res.data.order[0];
+          this.field = res.data.field;
+        }
       }
     }
   }

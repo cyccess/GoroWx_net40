@@ -45,7 +45,7 @@
         this.setOpenid(model.fUserOpenID);
         // let groupNo = model.fUserGroupNumber; //用户分组编号
         let path = getStore("redirect");
-        console.log("path:"+path);
+        console.log("path:" + path);
         if (path) {
           this.$router.push(path);
         }

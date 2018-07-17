@@ -6,7 +6,7 @@ namespace Goro.Check.Web.Controllers
 {
     public class ApiController : Controller
     {
-        private IApiService apiService;
+        private readonly IApiService apiService;
 
         public ApiController()
         {
@@ -108,9 +108,9 @@ namespace Goro.Check.Web.Controllers
             return Json(model);
         }
 
-        public ActionResult SalesOrderDetail(string phoneNumber, string fBillNo)
+        public ActionResult SalesOrderDetail(string phoneNumber, string fBillNo, string billTypeNumber)
         {
-            var res = apiService.GetSalesOrderDetail(phoneNumber, fBillNo);
+            var res = apiService.GetSalesOrderDetail(phoneNumber, fBillNo, billTypeNumber);
 
             var model = new ReturnModel();
             model.Code = 100;
