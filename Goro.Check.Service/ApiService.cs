@@ -176,7 +176,7 @@ namespace Goro.Check.Service
 
                 if (!string.IsNullOrEmpty(custName))
                 {
-                    sql += " and FCustName like @FCustName";
+                    sql += " and(FCustName like @FCustName or FEmpName like @FCustName)";
                     sqlParameter.Add(new SqlParameter { ParameterName = "@FCustName", Value = "%" + custName + "%", SqlDbType = SqlDbType.NVarChar });
                 }
 
@@ -777,8 +777,8 @@ namespace Goro.Check.Service
             if (res != null)
             {
                 // 更新消息状态
-                string sql = "update seorder set FHeadSelfs0165=1 where FBillNo=" + res.FBillNo;
-                SqlHelper.ExecuteNonQuery(CommandType.Text, sql);
+                string sql = "update seorder set FHeadSelfs0165=1 where FBillNo=@FBillNo";
+                SqlHelper.ExecuteNonQuery(CommandType.Text, sql, new SqlParameter("@FBillNo", res.FBillNo));
 
                 string toUser = GetUserIdByUserGroup("002"); // 总经理组
                 string title = "您有销售订单[" + res.FBillNo + "]需要审核";
@@ -799,8 +799,8 @@ namespace Goro.Check.Service
             if (fBillNo != null)
             {
                 // 更新消息状态
-                string sql = "update seorder set FHeadSelfs0166=1 where FBillNo=" + fBillNo;
-                SqlHelper.ExecuteNonQuery(CommandType.Text, sql);
+                string sql = "update seorder set FHeadSelfs0166=1 where FBillNo=@FBillNo" ;
+                SqlHelper.ExecuteNonQuery(CommandType.Text, sql, new SqlParameter("@FBillNo", fBillNo));
 
                 string toUser = GetUserIdByUserGroup("004"); // 生产组
                 string title = "您有销售订单[" + fBillNo + "]需要确认";
@@ -820,8 +820,8 @@ namespace Goro.Check.Service
             if (fBillNo != null)
             {
                 // 更新消息状态
-                string sql = "update SEOutStock set FHeadSelfs1256=1 where FBillNo=" + fBillNo;
-                SqlHelper.ExecuteNonQuery(CommandType.Text, sql);
+                string sql = "update SEOutStock set FHeadSelfs1256=1 where FBillNo=@FBillNo";
+                SqlHelper.ExecuteNonQuery(CommandType.Text, sql, new SqlParameter("@FBillNo", fBillNo));
 
                 string toUser = GetUserIdByUserGroup("001"); // 销售总监组
                 string title = "您有退货通知单[" + fBillNo + "]需要审核";

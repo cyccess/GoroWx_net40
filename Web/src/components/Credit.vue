@@ -2,7 +2,7 @@
   <div class="sales-box">
     <div class="search-bar">
       <search
-        placeholder="客户名称"
+        placeholder="输入客户或业务员名称"
         @on-change="getResult"
         v-model="custName"
         @on-focus="onFocus"
@@ -17,7 +17,7 @@
           <div class="bill-no vux-1px-b">{{item.fCustName}}</div>
           <div class="custom">
             <div>金额:{{item.fAmount}}</div>
-
+            <div>业务员:{{item.fEmpName}}</div>
           </div>
         </div>
       </div>
@@ -25,7 +25,8 @@
   </div>
 </template>
 <script>
-  import { Search } from 'vux'
+  import {Search} from 'vux'
+
   export default {
     components: {
       Search
@@ -35,7 +36,7 @@
         page: 0,
         noData: '',
         list: [],
-        custName:""
+        custName: ""
       }
     },
     created() {
@@ -72,21 +73,21 @@
           done(true);
         }
       },
-      getResult (val) {
+      getResult(val) {
         console.log('on-change', val)
-        this.list =[];
+        this.list = [];
         this.page = 0;
         this.noData = '';
         this.$refs.myscroller.finishInfinite(false);
       },
-      onSubmit () {
+      onSubmit() {
         this.$refs.search.setBlur();
         this.getResult();
       },
-      onFocus () {
+      onFocus() {
         console.log('on focus')
       },
-      onCancel () {
+      onCancel() {
         console.log('on cancel')
       }
     }
@@ -122,9 +123,9 @@
     }
   }
 
-  .search-bar{
+  .search-bar {
     position: fixed;
-    top:0;
+    top: 0;
     left: 0;
     width: 100%;
     background-color: #f1f1f1;
