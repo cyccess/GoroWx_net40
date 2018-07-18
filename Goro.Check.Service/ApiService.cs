@@ -79,7 +79,7 @@ namespace Goro.Check.Service
         /// <param name="fBillNo"></param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public List<SalesOrder> QueryOrderList(string fBillNo, int page)
+        public List<SalesOrder> QueryOrderList(string fBillNo, string fEmpName, int page)
         {
             try
             {
@@ -96,6 +96,12 @@ namespace Goro.Check.Service
                 {
                     sql += " and FBillNo=@FBillNo";
                     sqlParameter.Add(new SqlParameter { ParameterName = "@FBillNo", Value = fBillNo, SqlDbType = SqlDbType.NVarChar });
+                }
+
+                if (!string.IsNullOrEmpty(fEmpName)) //根据业务人员名称查询
+                {
+                    sql += " and FEmpName=@FEmpName";
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FEmpName", Value = fEmpName, SqlDbType = SqlDbType.NVarChar });
                 }
 
                 string cmdText = "select* from(" + sql + ") as t"
@@ -161,7 +167,7 @@ namespace Goro.Check.Service
             }
         }
 
-        public List<CreditViewModel> QueryCreditList(string custName, int page)
+        public List<CreditViewModel> QueryCreditList(string custName, string fEmpName, int page)
         {
             try
             {
@@ -178,6 +184,12 @@ namespace Goro.Check.Service
                 {
                     sql += " and(FCustName like @FCustName or FEmpName like @FCustName)";
                     sqlParameter.Add(new SqlParameter { ParameterName = "@FCustName", Value = "%" + custName + "%", SqlDbType = SqlDbType.NVarChar });
+                }
+
+                if (!string.IsNullOrEmpty(fEmpName)) //根据业务人员名称查询
+                {
+                    sql += " and FEmpName=@FEmpName";
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FEmpName", Value = fEmpName, SqlDbType = SqlDbType.NVarChar });
                 }
 
                 string cmdText = "select* from(" + sql + ") as t"

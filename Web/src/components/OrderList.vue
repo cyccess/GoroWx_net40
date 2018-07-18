@@ -1,16 +1,16 @@
 <template>
   <div class="sales-box">
 
-<div class="search-bar">
-  <search
-    placeholder="订单编号"
-    @on-change="getResult"
-    v-model="fBillNo"
-    @on-focus="onFocus"
-    @on-cancel="onCancel"
-    @on-submit="onSubmit"
-    ref="search"></search>
-</div>
+    <div class="search-bar">
+      <search
+        placeholder="订单编号"
+        @on-change="getResult"
+        v-model="fBillNo"
+        @on-focus="onFocus"
+        @on-cancel="onCancel"
+        @on-submit="onSubmit"
+        ref="search"></search>
+    </div>
 
 
     <scroller :on-refresh="refresh" :on-infinite="infinite" ref="myscroller" :no-data-text="noData">
@@ -26,7 +26,9 @@
   </div>
 </template>
 <script>
-  import { Search } from 'vux'
+  import {Search} from 'vux'
+  import {mapState} from 'vuex'
+
   export default {
     components: {
       Search
@@ -36,8 +38,13 @@
         page: 0,
         noData: '',
         list: [],
-        fBillNo:""
+        fBillNo: ""
       }
+    },
+    computed: {
+      ...mapState([
+        'userInfo'
+      ])
     },
     created() {
 
@@ -56,7 +63,14 @@
           return;
         }
         this.page += 1;
-        let res = await this.$http.post('/api/QueryOrderList', {fBillNo: this.fBillNo, page: this.page});
+
+        let fEmpName = ''; //业务员名称
+        //业务人员只能查看自己的订单
+        if (this.userInfo.fUserGroupNumber === "007") {
+          fEmpName = this.userInfo.fEmpName;
+        }
+
+        let res = await this.$http.post('/api/QueryOrderList', {fBillNo: this.fBillNo, fEmpName: fEmpName, page: this.page});
 
         if (res.code === 100) {
           if (res.data.length < 10) {
@@ -78,14 +92,14 @@
         this.$router.push({path: '/orderDetail', query: {billNo: fBillNo}});
       },
 
-      getResult (val) {
+      getResult(val) {
         console.log('on-change', val)
-        this.list =[];
+        this.list = [];
         this.page = 0;
         this.noData = '';
         this.$refs.myscroller.finishInfinite(false);
       },
-      onSubmit () {
+      onSubmit() {
         this.$refs.search.setBlur();
 
         this.$vux.toast.show({
@@ -94,10 +108,10 @@
           text: 'on submit'
         })
       },
-      onFocus () {
+      onFocus() {
         console.log('on focus')
       },
-      onCancel () {
+      onCancel() {
         console.log('on cancel')
       }
     }
@@ -126,16 +140,16 @@
       height: 3.06667rem;
       line-height: 3.06667rem;
       margin-right: .4rem;
-      color:#666;
+      color: #666;
     }
     .custom {
       padding: .93333rem 0;
     }
   }
 
-  .search-bar{
+  .search-bar {
     position: fixed;
-    top:0;
+    top: 0;
     left: 0;
     width: 100%;
     background-color: #f1f1f1;

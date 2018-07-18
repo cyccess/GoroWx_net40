@@ -140,11 +140,12 @@ namespace Goro.Check.Web.Controllers
         /// 订单查询
         /// </summary>
         /// <param name="fBillNo"></param>
+        /// <param name="fEmpName">业务员</param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public ActionResult QueryOrderList(string fBillNo, int page = 1)
+        public ActionResult QueryOrderList(string fBillNo, string fEmpName, int page = 1)
         {
-            var list = apiService.QueryOrderList(fBillNo, page);
+            var list = apiService.QueryOrderList(fBillNo, fEmpName, page);
 
             var model = new ReturnModel();
 
@@ -176,11 +177,12 @@ namespace Goro.Check.Web.Controllers
         /// 信用额度查询
         /// </summary>
         /// <param name="custName"></param>
+        /// <param name="fEmpName">业务员</param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public ActionResult QueryCreditList(string custName, int page = 1)
+        public ActionResult QueryCreditList(string custName, string fEmpName, int page = 1)
         {
-            var list = apiService.QueryCreditList(custName, page);
+            var list = apiService.QueryCreditList(custName, fEmpName, page);
 
             var model = new ReturnModel();
 

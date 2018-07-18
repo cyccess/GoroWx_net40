@@ -26,6 +26,7 @@
 </template>
 <script>
   import {Search} from 'vux'
+  import {mapState} from 'vuex'
 
   export default {
     components: {
@@ -39,6 +40,11 @@
         custName: ""
       }
     },
+    computed: {
+      ...mapState([
+        'userInfo'
+      ])
+    },
     created() {
 
     },
@@ -51,12 +57,26 @@
         done();
       },
       async infinite(done) {
+        // 只能总经理和业务员查询信用额度
+        if(!(this.userInfo.fUserGroupNumber === "007" || this.userInfo.fUserGroupNumber === "002")){
+          this.noData = "您不能进行信用额度查询！";
+          done(true);
+          return;
+        }
+
         if (this.noData) {
           done();
           return;
         }
         this.page += 1;
-        let res = await this.$http.post('/api/QueryCreditList', {custName: this.custName, page: this.page});
+
+        let fEmpName = ''; //业务员名称
+        //业务人员只能查看自己的客户
+        if (this.userInfo.fUserGroupNumber === "007") {
+          fEmpName = this.userInfo.fEmpName;
+        }
+
+        let res = await this.$http.post('/api/QueryCreditList', {custName: this.custName, fEmpName: fEmpName, page: this.page});
 
         if (res.code === 100) {
           if (res.data.length < 10) {
