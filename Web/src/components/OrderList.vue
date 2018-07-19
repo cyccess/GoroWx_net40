@@ -130,7 +130,9 @@
   .sales-list {
     margin-top: 3.333rem;
   }
-
+  .sales-list>div:nth-of-type(odd) {
+    background-color: #f9f9f9;
+  }
   .sales-item {
     margin-top: .56667rem;
     padding-left: .75rem;

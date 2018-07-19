@@ -84,6 +84,9 @@
   .sales-list {
 
   }
+  .sales-list>div:nth-of-type(odd) {
+    background-color: #f9f9f9;
+  }
 
   .sales-item {
     margin-top: .56667rem;
