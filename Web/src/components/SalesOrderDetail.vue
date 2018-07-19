@@ -1,6 +1,5 @@
 <template>
-  <div class="sales-box">
-
+  <div class="sales-box" v-if="field.length>0">
     <div class="orderInfo">
       <div class="info-title">
         <span>销售订单审核 - {{userName}}</span>
@@ -18,29 +17,31 @@
 
       <!--&lt;!&ndash;生产显示回复&ndash;&gt;-->
       <!--<div class="info-text" v-if="userGroupNumber==='004'">-->
-        <!--<span>工艺回复：{{model['fMEContent']}}</span><br>-->
-        <!--<span>供应回复：{{model['fPOContent']}}</span>-->
+      <!--<span>工艺回复：{{model['fMEContent']}}</span><br>-->
+      <!--<span>供应回复：{{model['fPOContent']}}</span>-->
       <!--</div>-->
 
       <!--&lt;!&ndash;工艺/供应显示生产不确认原因&ndash;&gt;-->
       <!--<div class="info-text" v-if="userGroupNumber==='005'||userGroupNumber==='006'">生产不确认原因：{{model['fPDDeason']}}</div>-->
     </div>
 
-    <!--总经理组审核按钮-->
-    <div class="btn-wrapper" v-if="userGroupNumber==='002'">
-      <button @click="modalShow=true" class="btn btn-secondary" type="submit">不同意</button>
-      <button @click="agree" class="btn btn-primary" type="submit">同意</button>
-    </div>
+    <div class="btnGroup">
+      <!--总经理组审核按钮-->
+      <div class="btn-wrapper" v-if="userGroupNumber==='002'">
+        <button @click="modalShow=true" class="btn btn-secondary" type="submit">不同意</button>
+        <button @click="agree" class="btn btn-primary" type="submit">同意</button>
+      </div>
 
-    <!--生产确认/不确认按钮-->
-    <div class="btn-wrapper" v-else-if="userGroupNumber==='004'">
-      <button @click="modalShow=true" class="btn btn-secondary" type="submit">不确认</button>
-      <button @click="agree" class="btn btn-primary" type="submit">确认</button>
-    </div>
+      <!--生产确认/不确认按钮-->
+      <div class="btn-wrapper" v-else-if="userGroupNumber==='004'">
+        <button @click="modalShow=true" class="btn btn-secondary" type="submit">不确认</button>
+        <button @click="agree" class="btn btn-primary" type="submit">确认</button>
+      </div>
 
-    <!--工艺/供应回复按钮-->
-    <div class="btn-wrapper" v-if="userGroupNumber==='005'||userGroupNumber==='006'">
-      <button @click="modelReply=true" class="btn btn-primary" type="submit">回复</button>
+      <!--工艺/供应回复按钮-->
+      <div class="btn-wrapper" v-if="userGroupNumber==='005'||userGroupNumber==='006'">
+        <button @click="modelReply=true" class="btn btn-primary" type="submit">回复</button>
+      </div>
     </div>
 
     <!--总经理组、生产审核对话框-->
@@ -102,6 +103,8 @@
       </div>
     </x-dialog>
   </div>
+
+  <div class="order-tip" v-else>订单信息不存在！</div>
 </template>
 
 <script>
@@ -144,9 +147,10 @@
     methods: {
       async getData() {
         let res = await this.$http.post('/api/SalesOrderDetail', {phoneNumber: this.userInfo.fPhoneNumber, fBillNo: this.billNo});
-
-        this.model = res.data.order[0];
-        this.field = res.data.field
+        if (res.data.order.length > 0) {
+          this.model = res.data.order[0];
+          this.field = res.data.field
+        }
       },
       proAgree() {
         this.modelDelivery = false;
@@ -226,18 +230,19 @@
   @import '~vux/src/styles/close';
 
   .sales-box {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 100%;
     padding: .875rem;
     font-size: .875rem;
   }
 
+  .btnGroup {
+    position: relative;
+    z-index: 5;
+    height: 1rem;
+  }
+
   .btn-wrapper {
     display: flex;
-    position: absolute;
+    position: fixed;
     left: 0;
     bottom: 0;
     width: 100%;
@@ -268,6 +273,18 @@
   .line {
     padding-bottom: .85rem;
     margin-bottom: .85rem;
+  }
+
+  .order-tip{
+    position: absolute;
+    top: -.66667rem;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 4rem;
+    margin: auto;
+    color:#999;
+    text-align: center;
   }
 
   .weui-dialog {

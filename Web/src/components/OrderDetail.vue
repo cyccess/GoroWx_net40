@@ -64,16 +64,14 @@
   @import '~vux/src/styles/close';
 
   .sales-box {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 100%;
     padding: .875rem;
     font-size: .875rem;
   }
 
   .orderInfo {
+
+    overflow-x: auto;;
+
     margin-bottom: 1rem;
   }
 

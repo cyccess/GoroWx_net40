@@ -1,6 +1,5 @@
 <template>
-  <div class="sales-box">
-
+  <div class="sales-box" v-if="field.length>0">
     <div class="orderInfo">
       <div class="info-title">退货通知单详情</div>
       <div class="info-text" v-for="(item,index) in field" :key="index" :class="[index===2 ? 'vux-1px-b line' : '']">
@@ -8,11 +7,12 @@
       </div>
     </div>
 
-    <div class="btn-wrapper" v-if="userInfo.fUserGroupNumber==='001'||userInfo.fUserGroupNumber==='009'">
-      <button @click="modalShow=true" class="btn btn-secondary" type="submit">不同意</button>
-      <button @click="agree" class="btn btn-primary" type="submit">同意</button>
+    <div class="btnGroup">
+      <div class="btn-wrapper" v-if="userInfo.fUserGroupNumber==='001'||userInfo.fUserGroupNumber==='009'">
+        <button @click="modalShow=true" class="btn btn-secondary" type="submit">不同意</button>
+        <button @click="agree" class="btn btn-primary" type="submit">同意</button>
+      </div>
     </div>
-
     <x-dialog v-model="modalShow" class="dialog-disagree">
       <div class="card">
         <div class="dialog-close" @click="modalShow=false">
@@ -29,6 +29,8 @@
       </div>
     </x-dialog>
   </div>
+
+  <div class="order-tip" v-else>订单信息不存在！</div>
 </template>
 
 <script>
@@ -63,9 +65,10 @@
           phoneNumber: this.userInfo.fPhoneNumber,
           fBillNo: this.billNo
         });
-
-        this.model = res.data.order[0];
-        this.field = res.data.field
+        if (res.data.order.length > 0) {
+          this.model = res.data.order[0];
+          this.field = res.data.field;
+        }
       },
       async agree() {
         this.update("Y");
@@ -115,18 +118,18 @@
   @import '~vux/src/styles/close';
 
   .sales-box {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 100%;
     padding: .875rem;
     font-size: .875rem;
   }
 
+  .btnGroup{
+    position:relative;
+    z-index: 5;
+    height: 1rem;
+  }
   .btn-wrapper {
     display: flex;
-    position: absolute;
+    position: fixed;
     left: 0;
     bottom: 0;
     width: 100%;
@@ -153,6 +156,19 @@
     padding-bottom: .85rem;
     margin-bottom: .85rem;
   }
+
+  .order-tip{
+    position: absolute;
+    top: -.66667rem;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 4rem;
+    margin: auto;
+    color:#999;
+    text-align: center;
+  }
+
 
   .weui-dialog {
     text-align: left;

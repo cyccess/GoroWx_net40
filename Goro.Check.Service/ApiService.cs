@@ -659,7 +659,7 @@ namespace Goro.Check.Service
 
             if (msg == "OK")
             {
-                string toUser = GetUserIdByUserGroup("002", "008"); ;//总经理,制单人组
+                string toUser = GetUserIdByUserGroup("002", "004", "008"); ;//总经理,生产组,制单人组
                 toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
                 WechatService.Send(toUser, "销售订单[" + model.billNo + "]工艺已回复", model.reason, noticeDetailUrl);
@@ -687,7 +687,7 @@ namespace Goro.Check.Service
 
             if (msg == "OK")
             {
-                string toUser = GetUserIdByUserGroup("002", "008"); ;//总经理,业务员组,制单人组
+                string toUser = GetUserIdByUserGroup("002", "004", "008"); ;//总经理,生产组,制单人组
                 toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
                 WechatService.Send(toUser, "销售订单[" + model.billNo + "]供应已回复", model.reason, noticeDetailUrl);
@@ -747,7 +747,7 @@ namespace Goro.Check.Service
             if (fBillNo != null)
             {
                 // 更新消息状态
-                string sql = "update seorder set FHeadSelfs0166=1 where FBillNo=@FBillNo" ;
+                string sql = "update seorder set FHeadSelfs0166=1 where FBillNo=@FBillNo";
                 SqlHelper.ExecuteNonQuery(CommandType.Text, sql, new SqlParameter("@FBillNo", fBillNo));
 
                 string toUser = GetUserIdByUserGroup("004"); // 生产组
