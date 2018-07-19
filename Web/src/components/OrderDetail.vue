@@ -49,7 +49,7 @@
           args.billTypeNumber = '001'; // 销售单
         }
 
-        let res = await this.$http.post('/api/SalesOrderDetail', args);
+        let res = await this.$http.post('/api/OrderDetail', args);
 
         if (res.data) {
           this.model = res.data.order[0];

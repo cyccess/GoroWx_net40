@@ -13,6 +13,7 @@ namespace Goro.Check.Web.Controllers
             apiService = new ApiService();
         }
 
+        
         public ActionResult Login(string openId)
         {
             var userInfo = apiService.GetUserInfo(openId);
@@ -108,9 +109,9 @@ namespace Goro.Check.Web.Controllers
             return Json(model);
         }
 
-        public ActionResult SalesOrderDetail(string phoneNumber, string fBillNo, string billTypeNumber)
+        public ActionResult SalesOrderDetail(string phoneNumber, string fBillNo)
         {
-            var res = apiService.GetSalesOrderDetail(phoneNumber, fBillNo, billTypeNumber);
+            var res = apiService.GetSalesOrderDetail(phoneNumber, fBillNo);
 
             var model = new ReturnModel();
             model.Code = 100;
@@ -152,6 +153,18 @@ namespace Goro.Check.Web.Controllers
             if (list.Count == 0) model.Code = 0;
 
             model.Data = list;
+            return Json(model);
+        }
+
+        // 订单详情
+        public ActionResult OrderDetail(string phoneNumber, string fBillNo, string billTypeNumber)
+        {
+            var res = apiService.GetSalesOrderDetail(phoneNumber, fBillNo, billTypeNumber);
+
+            var model = new ReturnModel();
+            model.Code = 100;
+            model.Data = res;
+
             return Json(model);
         }
 
