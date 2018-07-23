@@ -13,7 +13,7 @@ namespace Goro.Check.Web.Controllers
             apiService = new ApiService();
         }
 
-        
+
         public ActionResult Login(string openId)
         {
             var userInfo = apiService.GetUserInfo(openId);
@@ -144,22 +144,29 @@ namespace Goro.Check.Web.Controllers
         /// <param name="fEmpName">业务员</param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public ActionResult QueryOrderList(string fBillNo, string fEmpName, int page = 1)
+        public ActionResult QueryOrderList(string fBillNo, string fEmpName, string userGroupNumber, int page = 1)
         {
-            var list = apiService.QueryOrderList(fBillNo, fEmpName, page);
-
             var model = new ReturnModel();
 
-            if (list.Count == 0) model.Code = 0;
+            if (!apiService.IsExistsUserGroupFieldDisplayed(userGroupNumber))
+            {
+                model.Code = -5;
+                model.Message = "用户所在分组，未设置显示字段";
+                return Json(model);
+            }
+
+            var list = apiService.QueryOrderList(fBillNo, fEmpName, page);
+
+            if (list == null || list.Count == 0) model.Code = 0;
 
             model.Data = list;
             return Json(model);
         }
 
         // 订单详情
-        public ActionResult OrderDetail(string phoneNumber, string fBillNo, string billTypeNumber)
+        public ActionResult OrderDetail(string phoneNumber, string fBillNo)
         {
-            var res = apiService.GetSalesOrderDetail(phoneNumber, fBillNo, billTypeNumber);
+            var res = apiService.QueryOrderDetail(phoneNumber, fBillNo);
 
             var model = new ReturnModel();
             model.Code = 100;
@@ -180,7 +187,7 @@ namespace Goro.Check.Web.Controllers
 
             var model = new ReturnModel();
 
-            if (list.Count == 0) model.Code = 0;
+            if (list == null || list.Count == 0) model.Code = 0;
 
             model.Data = list;
             return Json(model);
@@ -199,7 +206,7 @@ namespace Goro.Check.Web.Controllers
 
             var model = new ReturnModel();
 
-            if (list.Count == 0) model.Code = 0;
+            if (list == null || list.Count == 0) model.Code = 0;
 
             model.Data = list;
             return Json(model);

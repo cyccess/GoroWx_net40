@@ -15,6 +15,8 @@ namespace Goro.Check.Service
 
         List<SalesOrder> QueryOrderList(string fBillNo, string fEmpName, int page);
 
+        SalesOrderDetail QueryOrderDetail(string phoneNumber, string fBillNo);
+
         List<StockViewModel> QueryStockList(string itemName, int page);
 
         List<CreditViewModel> QueryCreditList(string custName, string fEmpName, int page);
@@ -27,8 +29,10 @@ namespace Goro.Check.Service
 
         List<SalesOrder> GetSalesOrderList(string phoneNumber, int page);
 
-        SalesOrderDetail GetSalesOrderDetail(string phoneNumber, string fBillNo, string billTypeNumber = "001");
+        SalesOrderDetail GetSalesOrderDetail(string phoneNumber, string fBillNo);
 
         string UpdateSalesOrder(SalesOrderViewModel model);
+
+        bool IsExistsUserGroupFieldDisplayed(string userGroupNumber);
     }
 }

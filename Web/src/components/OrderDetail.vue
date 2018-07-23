@@ -1,15 +1,11 @@
 <template>
   <div class="sales-box">
-
     <div class="orderInfo">
-      <div class="info-title">
-        <span>订单信息</span>
-      </div>
-
       <div class="info-text" v-for="(item,index) in field" :key="index" :class="[index===2 ? 'vux-1px-b line' : '']">
-        <span>{{item.fFieldDescription}}：{{model[item.fFieldName]}}</span>
+        <span v-if="item.fFieldDataType==='datetime'">{{item.fFieldDescription}}：{{model[item.fFieldName]|moment('YYYY-MM-DD HH:mm:ss')}}</span>
+        <div v-else-if="item.fFieldName==='fLog'" class="vux-1px-t" v-html="$options.filters.log(model[item.fFieldName])"></div>
+        <span v-else>{{item.fFieldDescription}}：{{model[item.fFieldName]}}</span>
       </div>
-
     </div>
   </div>
 </template>
@@ -28,7 +24,10 @@
     computed: {
       ...mapState([
         'userInfo'
-      ])
+      ]),
+      showLog(){
+
+      }
     },
     created() {
       this.billNo = this.$route.query.billNo;
@@ -55,6 +54,15 @@
           this.model = res.data.order[0];
           this.field = res.data.field;
         }
+      }
+    },
+    filters:{
+      log(value){
+        let item = [];
+        if(value){
+          item = value.split(';');
+        }
+        return item.join("<br>");
       }
     }
   }

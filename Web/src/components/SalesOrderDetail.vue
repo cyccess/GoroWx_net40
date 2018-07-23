@@ -12,17 +12,11 @@
       </div>
 
       <div class="info-text" v-for="(item,index) in field" :key="index" :class="[index===2 ? 'vux-1px-b line' : '']">
-        <span>{{item.fFieldDescription}}：{{model[item.fFieldName]}}</span>
+        <span>{{item.fFieldDescription}}：</span>
+        <span v-if="item.fFieldDataType==='datetime'">{{model[item.fFieldName]|moment('YYYY-MM-DD HH:mm:ss')}}</span>
+        <span v-else>{{model[item.fFieldName]}}</span>
       </div>
 
-      <!--&lt;!&ndash;生产显示回复&ndash;&gt;-->
-      <!--<div class="info-text" v-if="userGroupNumber==='004'">-->
-      <!--<span>工艺回复：{{model['fMEContent']}}</span><br>-->
-      <!--<span>供应回复：{{model['fPOContent']}}</span>-->
-      <!--</div>-->
-
-      <!--&lt;!&ndash;工艺/供应显示生产不确认原因&ndash;&gt;-->
-      <!--<div class="info-text" v-if="userGroupNumber==='005'||userGroupNumber==='006'">生产不确认原因：{{model['fPDDeason']}}</div>-->
     </div>
 
     <div class="btnGroup">

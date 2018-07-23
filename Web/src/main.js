@@ -9,9 +9,9 @@ import routes from './router/index'
 import store from './store'
 import VueScroller from 'vue-scroller'
 import VueCookies from 'vue-cookies'
+import Moment from 'vue-moment'
 
 import {AjaxPlugin, AlertPlugin, ConfirmPlugin, ToastPlugin} from 'vux'
-import {setStore} from "./utils"
 
 Vue.use(VueRouter);
 Vue.use(VueScroller);
@@ -20,6 +20,7 @@ Vue.use(AjaxPlugin);
 Vue.use(AlertPlugin);
 Vue.use(ConfirmPlugin);
 Vue.use(ToastPlugin);
+Vue.use(Moment);
 
 const router = new VueRouter({
   routes

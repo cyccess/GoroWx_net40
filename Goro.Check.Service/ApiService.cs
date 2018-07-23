@@ -94,14 +94,14 @@ namespace Goro.Check.Service
 
                 if (!string.IsNullOrEmpty(fBillNo))
                 {
-                    sql += " and FBillNo=@FBillNo";
-                    sqlParameter.Add(new SqlParameter { ParameterName = "@FBillNo", Value = fBillNo, SqlDbType = SqlDbType.NVarChar });
+                    sql += " and FBillNo like @FBillNo";
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FBillNo", Value = "%" + fBillNo, SqlDbType = SqlDbType.NVarChar });
                 }
 
                 if (!string.IsNullOrEmpty(fEmpName)) //根据业务人员名称查询
                 {
-                    sql += " and FEmpName=@FEmpName";
-                    sqlParameter.Add(new SqlParameter { ParameterName = "@FEmpName", Value = fEmpName, SqlDbType = SqlDbType.NVarChar });
+                    sql += " and FEmpName like @FEmpName";
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FEmpName", Value = "%" + fEmpName, SqlDbType = SqlDbType.NVarChar });
                 }
 
                 string cmdText = "select* from(" + sql + ") as t"
@@ -124,6 +124,46 @@ namespace Goro.Check.Service
                 throw;
             }
         }
+
+        /// <summary>
+        /// 查询订单详情
+        /// </summary>
+        /// <param name="phoneNumber"></param>
+        /// <param name="fBillNo"></param>
+        /// <returns></returns>
+        public SalesOrderDetail QueryOrderDetail(string phoneNumber, string fBillNo)
+        {
+            try
+            {
+                SalesOrderDetail salesOrder = new SalesOrderDetail();
+                var fields = GetUserGroupFieldDisplayed(phoneNumber, "001");
+                // 增加查询订单详情日志显示
+                fields.Add(new FieldDisplayed() { FFieldDataType = "varchar(2205)", FFieldName = "fLog", FFieldDescription = "日志" });
+                salesOrder.Field = fields;
+                var field = string.Join(",", fields.Select(f => f.FFieldName).ToArray());
+
+                SqlParameter[] sqlParameter = new SqlParameter[]
+                {
+                    new SqlParameter("@FBillNo",fBillNo)
+                };
+
+                string sql = "select " + field + " from tm_v_SeOrderList where FBillNo=@FBillNo";
+
+                LoggerHelper.Info("sql:" + sql);
+
+                var res = SqlHelper.ExecuteDataTable(CommandType.Text, sql, sqlParameter);
+                salesOrder.Order = res;
+
+                LoggerHelper.Info("查询订单详情");
+                return salesOrder;
+            }
+            catch (Exception e)
+            {
+                LoggerHelper.Info("查询订单详情错误：" + e);
+                return null;
+            }
+        }
+
 
         public List<StockViewModel> QueryStockList(string itemName, int page)
         {
@@ -314,6 +354,7 @@ namespace Goro.Check.Service
                 var dt = SqlHelper.ExecuteDataTable(CommandType.StoredProcedure, "tm_p_GetFieldDisplayed", sqlParameter);
                 var fields = dt.AsEnumerable().Select(r => new FieldDisplayed
                 {
+                    FFieldDataType = r["FFieldDataType"].ToString(),
                     FFieldName = GetFirstLowerStr(r["FFieldName"].ToString()),
                     FFieldDescription = r["FFieldDescription"].ToString()
                 }).ToList();
@@ -325,6 +366,27 @@ namespace Goro.Check.Service
                 LoggerHelper.Info("根据手机号获得可查看字段，[" + phoneNumber + "]" + e);
                 return null;
             }
+        }
+
+        /// <summary>
+        /// 是否存在用户组字段显示
+        /// </summary>
+        /// <param name="userGroupNumber"></param>
+        /// <returns></returns>
+        public bool IsExistsUserGroupFieldDisplayed(string userGroupNumber)
+        {
+            string cmdText = "select count(1) from tm_v_UserGroupFieldDisplayed where FUserGroupNumber=@UserGroupNumber";
+            var res = SqlHelper.ExecuteScalar(CommandType.Text, cmdText, new SqlParameter("@UserGroupNumber", userGroupNumber));
+            bool check = false;
+            if (res != null)
+            {
+                int.TryParse(res.ToString(), out int count);
+                if (count > 0)
+                {
+                    check = true;
+                }
+            }
+            return check;
         }
 
         /// <summary>
@@ -468,13 +530,12 @@ namespace Goro.Check.Service
         /// <param name="fBillNo"></param>
         /// <param name="billTypeNumber">001 销售订单、 002 退货通知单，默认值为001</param>
         /// <returns></returns>
-        public SalesOrderDetail GetSalesOrderDetail(string phoneNumber, string fBillNo, string billTypeNumber = "001")
+        public SalesOrderDetail GetSalesOrderDetail(string phoneNumber, string fBillNo)
         {
             try
             {
                 SalesOrderDetail salesOrder = new SalesOrderDetail();
-                var fields = GetUserGroupFieldDisplayed(phoneNumber, billTypeNumber);
-
+                var fields = GetUserGroupFieldDisplayed(phoneNumber, "001");
                 salesOrder.Field = fields;
                 var field = string.Join(",", fields.Select(f => f.FFieldName).ToArray());
 
@@ -482,8 +543,6 @@ namespace Goro.Check.Service
                 {
                     new SqlParameter("@FBillNo",fBillNo)
                 };
-
-                //field += ",fMEContent,fPOContent,fPDDeason,fGMResult,fPDCResult";
 
                 string sql = "select " + field + " from tm_v_SeOrderList where FBillNo=@FBillNo";
 

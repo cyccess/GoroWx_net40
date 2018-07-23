@@ -12,7 +12,6 @@
         ref="search"></search>
     </div>
 
-
     <scroller :on-refresh="refresh" :on-infinite="infinite" ref="myscroller" :no-data-text="noData">
       <div class="sales-list">
         <div @click="detail(index)" class="sales-item" v-for="(item,index) in list" :key="index">
@@ -58,6 +57,13 @@
         done();
       },
       async infinite(done) {
+        // 销售总监和质检组不能查询
+        if (this.userInfo.fUserGroupNumber === "001" || this.userInfo.fUserGroupNumber === "009") {
+          this.noData = "您不能进行销售订单查询！";
+          done(true);
+          return;
+        }
+
         if (this.noData) {
           done();
           return;
@@ -70,7 +76,12 @@
           fEmpName = this.userInfo.fEmpName;
         }
 
-        let res = await this.$http.post('/api/QueryOrderList', {fBillNo: this.fBillNo, fEmpName: fEmpName, page: this.page});
+        let res = await this.$http.post('/api/QueryOrderList', {
+          fBillNo: this.fBillNo,
+          fEmpName: fEmpName,
+          userGroupNumber: this.userInfo.fUserGroupNumber,
+          page: this.page
+        });
 
         if (res.code === 100) {
           if (res.data.length < 10) {
@@ -130,9 +141,11 @@
   .sales-list {
     margin-top: 3.333rem;
   }
-  .sales-list>div:nth-of-type(odd) {
+
+  .sales-list > div:nth-of-type(odd) {
     background-color: #f9f9f9;
   }
+
   .sales-item {
     margin-top: .56667rem;
     padding-left: .75rem;
