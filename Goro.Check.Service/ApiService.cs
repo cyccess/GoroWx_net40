@@ -79,29 +79,71 @@ namespace Goro.Check.Service
         /// <param name="fBillNo"></param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public List<SalesOrder> QueryOrderList(string fBillNo, string fEmpName, int page)
+        public List<SalesOrder> QueryOrderList(QueryOrderViewModel model)
         {
             try
             {
                 int pageSize = 10;
+                string queryValue = "";// 是否
                 var sqlParameter = new List<SqlParameter>()
                 {
-                    new SqlParameter("@PageIndex",(page - 1) * pageSize),
-                    new SqlParameter("@PageSize",page * pageSize)
+                    new SqlParameter("@PageIndex",(model.page - 1) * pageSize),
+                    new SqlParameter("@PageSize",model.page * pageSize)
                 };
 
-                string sql = "select ROW_NUMBER() over(order by FDate desc) rownumber, FBillNo,FCustName from tm_v_SeOrderList where 1=1";
+                string sql = "select ROW_NUMBER() over(order by FDate desc) rownumber, FBillNo,FCustName from tm_v_SEOrderQuery where 1=1";
 
-                if (!string.IsNullOrEmpty(fBillNo))
+                if (!string.IsNullOrEmpty(model.fBillNo))
                 {
-                    sql += " and FBillNo like @FBillNo";
-                    sqlParameter.Add(new SqlParameter { ParameterName = "@FBillNo", Value = "%" + fBillNo, SqlDbType = SqlDbType.NVarChar });
+                    sql += " and (FBillNo like @FBillNo or FEmpName like @FBillNo or FCustName like @FBillNo)";
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FBillNo", Value = "%" + model.fBillNo, SqlDbType = SqlDbType.NVarChar });
                 }
 
-                if (!string.IsNullOrEmpty(fEmpName)) //根据业务人员名称查询
+                if (!string.IsNullOrEmpty(model.fEmpName)) //根据业务人员名称查询
                 {
                     sql += " and FEmpName like @FEmpName";
-                    sqlParameter.Add(new SqlParameter { ParameterName = "@FEmpName", Value = "%" + fEmpName, SqlDbType = SqlDbType.NVarChar });
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FEmpName", Value = "%" + model.fEmpName, SqlDbType = SqlDbType.NVarChar });
+                }
+
+                if (!model.isConfirm.Equals("-1")) // 是否确认
+                {
+                    sql += "and FConfirmStatus=@FConfirmStatus";
+
+                    //总经理未审核通过的为特批未通过
+                    if (model.isConfirm.Equals("2"))
+                    {
+                        queryValue = "特批未通过";
+                    }
+                    else if(model.isConfirm.Equals("0"))
+                    {
+                        queryValue = "否";
+                    }
+                    else if (model.isConfirm.Equals("1"))
+                    {
+                        queryValue = "是";
+                    }
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FConfirmStatus", Value = queryValue, SqlDbType = SqlDbType.NVarChar });
+                }
+
+                if (!model.isStock.Equals("-1")) //是否发货
+                {
+                    sql += " and FStockStatus=@FStockStatus";
+                    queryValue = model.isStock == "1" ? "是" : "否";
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FStockStatus", Value = queryValue, SqlDbType = SqlDbType.NVarChar });
+                }
+
+                if (!model.isInvoice.Equals("-1")) //是否开票
+                {
+                    sql += " and FInvoiceStatus=@FInvoiceStatus";
+                    queryValue = model.isInvoice == "1" ? "是" : "否";
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FInvoiceStatus", Value = queryValue, SqlDbType = SqlDbType.NVarChar });
+                }
+
+                if (!model.isReceive.Equals("-1")) //是否收款
+                {
+                    sql += " and FReceiveStatus=@FReceiveStatus";
+                    queryValue = model.isReceive == "1" ? "是" : "否";
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FReceiveStatus", Value = queryValue, SqlDbType = SqlDbType.NVarChar });
                 }
 
                 string cmdText = "select* from(" + sql + ") as t"
@@ -136,9 +178,10 @@ namespace Goro.Check.Service
             try
             {
                 SalesOrderDetail salesOrder = new SalesOrderDetail();
-                var fields = GetUserGroupFieldDisplayed(phoneNumber, "001");
-                // 增加查询订单详情日志显示
-                fields.Add(new FieldDisplayed() { FFieldDataType = "varchar(2205)", FFieldName = "fLog", FFieldDescription = "日志" });
+                var fields = GetUserGroupFieldDisplayed(phoneNumber, "003");
+
+                fields.RemoveAt(16);
+
                 salesOrder.Field = fields;
                 var field = string.Join(",", fields.Select(f => f.FFieldName).ToArray());
 
@@ -147,7 +190,7 @@ namespace Goro.Check.Service
                     new SqlParameter("@FBillNo",fBillNo)
                 };
 
-                string sql = "select " + field + " from tm_v_SeOrderList where FBillNo=@FBillNo";
+                string sql = "select " + field + " from tm_v_SEOrderQuery where FBillNo=@FBillNo";
 
                 LoggerHelper.Info("sql:" + sql);
 
@@ -676,7 +719,7 @@ namespace Goro.Check.Service
                 }
                 else
                 {
-                    toUser = GetUserIdByUserGroup("002", "008");//总经理,制单人组
+                    toUser = GetUserIdByUserGroup("008");//制单人组
                     toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
                     title = "销售订单[" + model.billNo + "]生产未确认";
                     WechatService.Send(toUser, title, model.reason, noticeDetailUrl);
@@ -718,7 +761,7 @@ namespace Goro.Check.Service
 
             if (msg == "OK")
             {
-                string toUser = GetUserIdByUserGroup("002", "004", "008"); ;//总经理,生产组,制单人组
+                string toUser = GetUserIdByUserGroup("004", "008"); ;//生产组,制单人组
                 toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
                 WechatService.Send(toUser, "销售订单[" + model.billNo + "]工艺已回复", model.reason, noticeDetailUrl);
@@ -746,7 +789,7 @@ namespace Goro.Check.Service
 
             if (msg == "OK")
             {
-                string toUser = GetUserIdByUserGroup("002", "004", "008"); ;//总经理,生产组,制单人组
+                string toUser = GetUserIdByUserGroup("004", "008"); ;//生产组,制单人组
                 toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
                 WechatService.Send(toUser, "销售订单[" + model.billNo + "]供应已回复", model.reason, noticeDetailUrl);

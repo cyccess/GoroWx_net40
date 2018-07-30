@@ -13,7 +13,7 @@ namespace Goro.Check.Service
 
         string UserOpenIdBinding(string phoneNumber, string openId);
 
-        List<SalesOrder> QueryOrderList(string fBillNo, string fEmpName, int page);
+        List<SalesOrder> QueryOrderList(QueryOrderViewModel model);
 
         SalesOrderDetail QueryOrderDetail(string phoneNumber, string fBillNo);
 

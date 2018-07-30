@@ -1,7 +1,12 @@
 <template>
   <div class="sales-box">
     <div class="orderInfo">
-      <div class="info-text" v-for="(item,index) in field" :key="index" :class="[index===2 ? 'vux-1px-b line' : '']">
+      <div class="info-title">
+        <span>订单详情</span>
+        <div class="orderState">{{model.FStatus}}</div>
+      </div>
+
+      <div class="info-text" v-for="(item,index) in field" :key="index" v-if="model[item.fFieldName]" :class="[index===2 ? 'vux-1px-b line' : '']">
         <span v-if="item.fFieldDataType==='datetime'">{{item.fFieldDescription}}：{{model[item.fFieldName]|moment('YYYY-MM-DD HH:mm:ss')}}</span>
         <div v-else-if="item.fFieldName==='fLog'" class="vux-1px-t" v-html="$options.filters.log(model[item.fFieldName])"></div>
         <span v-else>{{item.fFieldDescription}}：{{model[item.fFieldName]}}</span>
@@ -24,10 +29,7 @@
     computed: {
       ...mapState([
         'userInfo'
-      ]),
-      showLog(){
-
-      }
+      ])
     },
     created() {
       this.billNo = this.$route.query.billNo;

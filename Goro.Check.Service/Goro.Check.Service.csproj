@@ -51,6 +51,7 @@
     <Compile Include="MessageRegistry.cs" />
     <Compile Include="Model\CreditViewModel.cs" />
     <Compile Include="Model\FieldDisplayed.cs" />
+    <Compile Include="Model\QueryOrderViewModel.cs" />
     <Compile Include="Model\SalesOrder.cs" />
     <Compile Include="Model\SalesOrderDetail.cs" />
     <Compile Include="Model\SalesOrderViewModel.cs" />

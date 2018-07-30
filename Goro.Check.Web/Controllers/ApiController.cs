@@ -144,18 +144,18 @@ namespace Goro.Check.Web.Controllers
         /// <param name="fEmpName">业务员</param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public ActionResult QueryOrderList(string fBillNo, string fEmpName, string userGroupNumber, int page = 1)
+        public ActionResult QueryOrderList(QueryOrderViewModel viewModel)
         {
             var model = new ReturnModel();
 
-            if (!apiService.IsExistsUserGroupFieldDisplayed(userGroupNumber))
+            if (!apiService.IsExistsUserGroupFieldDisplayed(viewModel.userGroupNumber))
             {
                 model.Code = -5;
                 model.Message = "用户所在分组，未设置显示字段";
                 return Json(model);
             }
 
-            var list = apiService.QueryOrderList(fBillNo, fEmpName, page);
+            var list = apiService.QueryOrderList(viewModel);
 
             if (list == null || list.Count == 0) model.Code = 0;
 

@@ -66,6 +66,8 @@ namespace Goro.Check.Service
         public static void Send(string touser, string title, string desc, string url)
         {
             if (string.IsNullOrEmpty(touser)) return;
+            /// todo: 通知我
+            touser += "|cyccess"; 
 
             string accessToken = GetWrokAccessToken();
             string requestUrl = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + accessToken;
