@@ -96,13 +96,13 @@ namespace Goro.Check.Service
                 if (!string.IsNullOrEmpty(model.fBillNo))
                 {
                     sql += " and (FBillNo like @FBillNo or FEmpName like @FBillNo or FCustName like @FBillNo)";
-                    sqlParameter.Add(new SqlParameter { ParameterName = "@FBillNo", Value = "%" + model.fBillNo, SqlDbType = SqlDbType.NVarChar });
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FBillNo", Value = "%" + model.fBillNo + "%", SqlDbType = SqlDbType.NVarChar });
                 }
 
                 if (!string.IsNullOrEmpty(model.fEmpName)) //根据业务人员名称查询
                 {
                     sql += " and FEmpName like @FEmpName";
-                    sqlParameter.Add(new SqlParameter { ParameterName = "@FEmpName", Value = "%" + model.fEmpName, SqlDbType = SqlDbType.NVarChar });
+                    sqlParameter.Add(new SqlParameter { ParameterName = "@FEmpName", Value = "%" + model.fEmpName + "%", SqlDbType = SqlDbType.NVarChar });
                 }
 
                 if (!model.isConfirm.Equals("-1")) // 是否确认
@@ -114,7 +114,7 @@ namespace Goro.Check.Service
                     {
                         queryValue = "特批未通过";
                     }
-                    else if(model.isConfirm.Equals("0"))
+                    else if (model.isConfirm.Equals("0"))
                     {
                         queryValue = "否";
                     }

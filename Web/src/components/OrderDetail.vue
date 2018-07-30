@@ -8,7 +8,7 @@
 
       <div class="info-text" v-for="(item,index) in field" :key="index" v-if="model[item.fFieldName]" :class="[index===2 ? 'vux-1px-b line' : '']">
         <span v-if="item.fFieldDataType==='datetime'">{{item.fFieldDescription}}：{{model[item.fFieldName]|moment('YYYY-MM-DD HH:mm:ss')}}</span>
-        <div v-else-if="item.fFieldName==='fLog'" class="vux-1px-t" v-html="$options.filters.log(model[item.fFieldName])"></div>
+        <div v-else-if="item.fFieldName==='fLog'" class="line vux-1px-t" v-html="$options.filters.logs(model[item.fFieldName])"></div>
         <span v-else>{{item.fFieldDescription}}：{{model[item.fFieldName]}}</span>
       </div>
     </div>
@@ -38,17 +38,10 @@
     methods: {
       async getData() {
         let args = {
-          billTypeNumber: '',
+          billTypeNumber: '001', // 销售单
           phoneNumber: this.userInfo.fPhoneNumber,
           fBillNo: this.billNo
         };
-
-        if (this.userInfo.fUserGroupNumber === '001' || this.userInfo.fUserGroupNumber === '009') {
-          args.billTypeNumber = '002'; // 退货通知单
-        }
-        else {
-          args.billTypeNumber = '001'; // 销售单
-        }
 
         let res = await this.$http.post('/api/OrderDetail', args);
 
@@ -59,7 +52,7 @@
       }
     },
     filters:{
-      log(value){
+      logs(value){
         let item = [];
         if(value){
           item = value.split(';');
