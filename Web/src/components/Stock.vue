@@ -3,9 +3,7 @@
     <div class="search-bar">
       <search
         placeholder="物料名称"
-        @on-change="getResult"
         v-model="itemName"
-        @on-focus="onFocus"
         @on-cancel="onCancel"
         @on-submit="onSubmit"
         ref="search"></search>
@@ -73,8 +71,7 @@
           done(true);
         }
       },
-      getResult (val) {
-        console.log('on-change', val)
+      getResult () {
         this.list =[];
         this.page = 0;
         this.noData = '';
@@ -84,11 +81,9 @@
         this.$refs.search.setBlur();
         this.getResult();
       },
-      onFocus () {
-        console.log('on focus')
-      },
       onCancel () {
-        console.log('on cancel')
+        this.itemName = '';
+        this.getResult();
       }
     }
   }

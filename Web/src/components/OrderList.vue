@@ -4,10 +4,12 @@
     <div class="search-bar">
       <search
         placeholder="订单号、业务员或客户名称"
-        @on-change="getResult"
         v-model="fBillNo"
         :autoFixed="false"
-        @on-submit="onSubmit">
+        @on-submit="onSubmit"
+        @on-cancel="onCancel"
+        ref="search"
+      >
       </search>
       <div class="filter-box vux-1px-b">
         <div class="search-filter" @click="showFilter=!showFilter"><span>筛选</span><i class="icon-filter"></i></div>
@@ -65,7 +67,7 @@
 
           <div class="filter-btn-group">
             <button @click="showFilter=false" class="btn btn-secondary btn-sm">取消</button>
-            <button @click="filter" class="btn btn-primary btn-sm">确定</button>
+            <button @click="onFilter" class="btn btn-primary btn-sm">确定</button>
           </div>
         </div>
 
@@ -172,8 +174,7 @@
         this.$router.push({path: '/orderDetail', query: {billNo: fBillNo}});
       },
 
-      getResult(val) {
-        console.log('on-change', val)
+      getResult() {
         this.list = [];
         this.page = 0;
         this.noData = '';
@@ -181,14 +182,13 @@
       },
       onSubmit() {
         this.$refs.search.setBlur();
-
-        this.$vux.toast.show({
-          type: 'text',
-          position: 'top',
-          text: 'on submit'
-        })
+        this.getResult();
       },
-      filter(){
+      onCancel(){
+        this.fBillNo = '';
+        this.getResult();
+      },
+      onFilter(){
         this.list = [];
         this.page = 0;
         this.noData = '';
