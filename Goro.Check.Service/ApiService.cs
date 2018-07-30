@@ -180,8 +180,6 @@ namespace Goro.Check.Service
                 SalesOrderDetail salesOrder = new SalesOrderDetail();
                 var fields = GetUserGroupFieldDisplayed(phoneNumber, "003");
 
-                fields.RemoveAt(16);
-
                 salesOrder.Field = fields;
                 var field = string.Join(",", fields.Select(f => f.FFieldName).ToArray());
 
