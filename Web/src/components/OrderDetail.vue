@@ -8,7 +8,7 @@
 
       <div class="info-text" v-for="(item,index) in field" :key="index" v-if="model[item.fFieldName]" :class="[index===2 ? 'vux-1px-b line' : '']">
         <span v-if="item.fFieldDataType==='datetime'">{{item.fFieldDescription}}：{{model[item.fFieldName]|moment('YYYY-MM-DD HH:mm:ss')}}</span>
-        <div v-else-if="item.fFieldName==='fLog'" class="vux-1px-t" v-html="$options.filters.log(model[item.fFieldName])"></div>
+        <div v-else-if="item.fFieldName==='fLog'" class="line vux-1px-t" v-html="$options.filters.logs(model[item.fFieldName])"></div>
         <span v-else>{{item.fFieldDescription}}：{{model[item.fFieldName]}}</span>
       </div>
     </div>
@@ -51,7 +51,7 @@
       }
     },
     filters:{
-      log(value){
+      logs(value){
         let item = [];
         if(value){
           item = value.split(';');
