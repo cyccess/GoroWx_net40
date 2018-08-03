@@ -67,6 +67,12 @@ Vue.filter('money', function (value) {
   return value.toFixed(2)
 });
 
+Vue.filter("hide", (customName) => {
+  if (!customName) return '';
+  var reg = /^(.{2}).*(.{4})$/;
+  return customName.replace(reg, '$1****$2');
+});
+
 router.beforeEach((to, from, next) => {
   let openId = store.state.openId;
   if (to.meta.requiresAuth && !openId) {

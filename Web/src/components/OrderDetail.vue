@@ -38,17 +38,9 @@
     methods: {
       async getData() {
         let args = {
-          billTypeNumber: '',
           phoneNumber: this.userInfo.fPhoneNumber,
           fBillNo: this.billNo
         };
-
-        if (this.userInfo.fUserGroupNumber === '001' || this.userInfo.fUserGroupNumber === '009') {
-          args.billTypeNumber = '002'; // 退货通知单
-        }
-        else {
-          args.billTypeNumber = '001'; // 销售单
-        }
 
         let res = await this.$http.post('/api/OrderDetail', args);
 

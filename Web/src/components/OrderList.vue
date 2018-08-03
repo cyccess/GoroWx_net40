@@ -79,7 +79,7 @@
         <div @click="detail(index)" class="sales-item" v-for="(item,index) in list" :key="index">
           <div class="bill-no vux-1px-b">订单编号：{{item.fBillNo}}</div>
           <div class="custom">
-            {{item.fCustName}}
+            {{item.fCustName | hide}}
           </div>
         </div>
       </div>
@@ -125,7 +125,7 @@
       },
       async infinite(done) {
         // 销售总监和质检组不能查询
-        if (this.userInfo.fUserGroupNumber === "001" || this.userInfo.fUserGroupNumber === "009") {
+        if (this.userInfo.fUserGroupNumber === "009") {
           this.noData = "您不能进行销售订单查询！";
           done(true);
           return;

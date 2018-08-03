@@ -114,7 +114,7 @@ namespace Goro.Check.Service
                     {
                         queryValue = "特批未通过";
                     }
-                    else if(model.isConfirm.Equals("0"))
+                    else if (model.isConfirm.Equals("0"))
                     {
                         queryValue = "否";
                     }
@@ -569,7 +569,6 @@ namespace Goro.Check.Service
         /// </summary>
         /// <param name="phoneNumber"></param>
         /// <param name="fBillNo"></param>
-        /// <param name="billTypeNumber">001 销售订单、 002 退货通知单，默认值为001</param>
         /// <returns></returns>
         public SalesOrderDetail GetSalesOrderDetail(string phoneNumber, string fBillNo)
         {
