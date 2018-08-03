@@ -5,7 +5,7 @@
         <div @click="detail(index)" class="sales-item" v-for="(item,index) in list" :key="index">
           <div class="bill-no vux-1px-b">单据编号：{{item.fBillNo}}</div>
           <div class="custom">
-            {{item.fCustName}}
+            <!--{{item.fCustName}}-->
           </div>
         </div>
       </div>

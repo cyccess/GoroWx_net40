@@ -11,7 +11,7 @@
         </div>
       </div>
 
-      <div class="info-text" v-for="(item,index) in field" :key="index" v-if="model[item.fFieldName]" :class="[index===2 ? 'vux-1px-b line' : '']">
+      <div class="info-text" v-for="(item,index) in field" :key="index" v-if="model[item.fFieldName]!==null" :class="[index===2 ? 'vux-1px-b line' : '']">
         <span>{{item.fFieldDescription}}：</span>
         <span v-if="item.fFieldDataType==='datetime'">{{model[item.fFieldName]|moment('YYYY-MM-DD HH:mm:ss')}}</span>
         <span v-else>{{model[item.fFieldName]}}</span>

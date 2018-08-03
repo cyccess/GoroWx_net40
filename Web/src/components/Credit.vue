@@ -55,8 +55,8 @@
         done();
       },
       async infinite(done) {
-        // 只能总经理和业务员查询信用额度
-        if(!(this.userInfo.fUserGroupNumber === "007" || this.userInfo.fUserGroupNumber === "002")){
+        // 只能总经理、销售总监、财务业务员查询信用额度
+        if (!(['001', '002', '003', '007'].indexOf(this.userInfo.fUserGroupNumber) > -1)) {
           this.noData = "您不能进行信用额度查询！";
           done(true);
           return;
@@ -122,7 +122,8 @@
   .sales-list {
     margin-top: 3.333rem;
   }
-  .sales-list>div:nth-of-type(odd) {
+
+  .sales-list > div:nth-of-type(odd) {
     background-color: #f9f9f9;
   }
 
