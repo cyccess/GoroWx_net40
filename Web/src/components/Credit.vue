@@ -55,8 +55,8 @@
         done();
       },
       async infinite(done) {
-        // 只能总经理、销售总监、财务业务员查询信用额度
-        if (!(['001', '002', '003', '007'].indexOf(this.userInfo.fUserGroupNumber) > -1)) {
+        // 只能总经理、销售总监、财务业务员、制单人员查询信用额度
+        if (!(['001', '002', '003', '007', '008'].indexOf(this.userInfo.fUserGroupNumber) > -1)) {
           this.noData = "您不能进行信用额度查询！";
           done(true);
           return;
