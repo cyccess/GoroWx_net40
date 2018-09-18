@@ -12,15 +12,15 @@ namespace Goro.Check.Web.Controllers
     {
         public ActionResult Index()
         {
-            //string reurl = Server.UrlEncode(WebConfig.WebHost + "/Authorize/WxRedirect");
+            string reurl = Server.UrlEncode(WebConfig.WebHost + "/Authorize/WxRedirect");
 
-            //string url = "https://" + "open.weixin.qq.com/connect/oauth2/authorize?appid=" + WebConfig.CorpID + "&redirect_uri=" + reurl + "&response_type=code&scope=snsapi_base&agentid=" + WebConfig.AgentId + "&state=STATE#wechat_redirect";
+            string url = "https://" + "open.weixin.qq.com/connect/oauth2/authorize?appid=" + WebConfig.CorpID + "&redirect_uri=" + reurl + "&response_type=code&scope=snsapi_base&agentid=" + WebConfig.AgentId + "&state=STATE#wechat_redirect";
 
-            //return Redirect(url);
+            return Redirect(url);
 
 
-            string redirectUrl = "http://localhost:8003/#/?openId=cyccess";
-            return Redirect(redirectUrl);
+            //string redirectUrl = "http://localhost:8003/#/?openId=cyccess";
+            //return Redirect(redirectUrl);
         }
 
 
@@ -29,15 +29,27 @@ namespace Goro.Check.Web.Controllers
             LoggerHelper.Info("code:" + code);
 
             string access_token = WechatService.GetWrokAccessToken();
-            string url = "https://" + "qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=" + access_token + "&code=" + code;
-            var token = HttpHelper.Get<WechatUserInfo>(url);
 
-            LoggerHelper.Info("UserInfo:" + JsonHelper.Serialize(token));
-            //Cache.CacheService.Set(token.UserId, token);
+            string redirectUrl = "/#/?openId=null";
 
-            string redirectUrl = "/#/?openId=" + token.UserId;
+            if (code == "" || access_token == "") return Redirect(redirectUrl);
 
-            return Redirect(redirectUrl);
+            try
+            {
+                string url = "https://" + "qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=" + access_token + "&code=" + code;
+                var token = HttpHelper.Get<WechatUserInfo>(url);
+
+                if (token != null)
+                {
+                    LoggerHelper.Info("UserInfo:" + JsonHelper.Serialize(token));
+                    redirectUrl = "/#/?openId=" + token.UserId;
+                }
+                return Redirect(redirectUrl);
+            }
+            catch (Exception)
+            {
+                return Redirect(redirectUrl);
+            }
         }
 
 

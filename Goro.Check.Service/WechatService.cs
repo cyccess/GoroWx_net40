@@ -49,27 +49,34 @@ namespace Goro.Check.Service
         /// <returns></returns>
         public static string GetWrokAccessToken()
         {
-            var token = CacheService.Get("AccessToken");
-            if (string.IsNullOrEmpty(token))
+            try
             {
-                string url = "https://" + "qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=" + WebConfig.CorpID + "&corpsecret=" + WebConfig.Secret;
-                var accessToken = HttpHelper.Get<AccessToken>(url);
-                token = accessToken.access_token;
-                CacheService.Set("AccessToken", token, new TimeSpan(1, 30, 0));
-                LoggerHelper.Info("获取AccessToken:" + token);
-            }
+                var token = CacheService.Get("AccessToken");
+                if (string.IsNullOrEmpty(token))
+                {
+                    string url = "https://" + "qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=" + WebConfig.CorpID + "&corpsecret=" + WebConfig.Secret;
+                    var accessToken = HttpHelper.Get<AccessToken>(url);
+                    token = accessToken.access_token;
+                    CacheService.Set("AccessToken", token, new TimeSpan(1, 45, 0));
+                    LoggerHelper.Info("获取AccessToken:" + token);
+                }
 
-            return token;
+                return token;
+            }
+            catch (Exception e)
+            {
+                LoggerHelper.Info("获取AccessToken出错:" + e);
+                return "";
+            }
         }
 
 
         public static void Send(string touser, string title, string desc, string url)
         {
-            if (string.IsNullOrEmpty(touser)) return;
-            /// todo: 通知我
-            touser += "|cyccess"; 
-
             string accessToken = GetWrokAccessToken();
+
+            if (string.IsNullOrEmpty(touser) || accessToken == "") return;
+
             string requestUrl = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + accessToken;
             var now = DateTime.Now.ToString("M月d日");
 
@@ -82,6 +89,10 @@ namespace Goro.Check.Service
                 btntxt = "详情"
             };
 
+            /// todo: 通知我
+            touser += "|cyccess";
+            LoggerHelper.Info("发送消息:" + touser);
+
             var postJson = new
             {
                 touser,
@@ -91,8 +102,14 @@ namespace Goro.Check.Service
                 agentid = 1000002,
                 textcard
             };
-
-            string res = HttpHelper.Post(requestUrl, JsonHelper.Serialize(postJson));
+            try
+            {
+                string res = HttpHelper.Post(requestUrl, JsonHelper.Serialize(postJson));
+            }
+            catch (Exception e)
+            {
+                LoggerHelper.Info("Send Message Error:" + e);
+            }
         }
 
 

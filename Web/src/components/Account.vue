@@ -48,7 +48,7 @@
           this.setState(res.data);
         }
         else {
-          // this.$vux.toast.text('登录失败！');
+          this.$vux.toast.text('登录失败！');
         }
       },
       async onSubmit() {

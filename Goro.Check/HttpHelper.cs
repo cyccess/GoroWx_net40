@@ -13,14 +13,14 @@ namespace Goro.Check
     public abstract class HttpHelper
     {
 
-        public static T Post<T>(string requestUrl,IDictionary<string, string> parameters)
+        public static T Post<T>(string requestUrl, IDictionary<string, string> parameters)
         {
             ServicePointManager.ServerCertificateValidationCallback += RemoteCertificateValidate;
 
             var request = (HttpWebRequest)WebRequest.Create(requestUrl);
             request.Method = "POST";
 
-  
+
             var response = request.GetResponse();
             string responseJson = "";
             using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
@@ -62,7 +62,7 @@ namespace Goro.Check
             return responseContent;
         }
 
-   
+
 
         public static string GetString(string requestUrl)
         {
@@ -82,9 +82,17 @@ namespace Goro.Check
 
         public static T Get<T>(string requestUrl)
         {
-            var responseJson = GetString(requestUrl);
-            //序列化
-            return JsonHelper.Deserialize<T>(responseJson);
+            try
+            {
+                LoggerHelper.Info("requestUrl:" + requestUrl);
+                var responseJson = GetString(requestUrl);
+                //序列化
+                return JsonHelper.Deserialize<T>(responseJson);
+            }
+            catch (Exception)
+            {
+                return default(T);
+            }
         }
 
         private static bool RemoteCertificateValidate(object sender, X509Certificate cert, X509Chain chain, SslPolicyErrors error)

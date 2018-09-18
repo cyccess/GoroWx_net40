@@ -654,7 +654,7 @@ namespace Goro.Check.Service
             if (msg == "OK")
             {
                 string toUser = GetUserIdByUserGroup("008"); //制单人组
-                toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
+                toUser += GetSeOrderUserId(model.billNo); //业务员消息只发当前订单
                 string title = "销售订单[" + model.billNo + "]已特批";
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
                 WechatService.Send(toUser, title, model.reason, noticeDetailUrl);
@@ -710,14 +710,14 @@ namespace Goro.Check.Service
                 if (model.result == "Y")
                 {
                     toUser = GetUserIdByUserGroup("008");//制单人组
-                    toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
+                    toUser += GetSeOrderUserId(model.billNo); //业务员消息只发当前订单
                     title = "销售订单[" + model.billNo + "]已通过生产已确认";
                     WechatService.Send(toUser, title, model.reason, noticeDetailUrl);
                 }
                 else
                 {
                     toUser = GetUserIdByUserGroup("008");//制单人组
-                    toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
+                    toUser += GetSeOrderUserId(model.billNo); //业务员消息只发当前订单
                     title = "销售订单[" + model.billNo + "]生产未确认";
                     WechatService.Send(toUser, title, model.reason, noticeDetailUrl);
 
@@ -759,7 +759,7 @@ namespace Goro.Check.Service
             if (msg == "OK")
             {
                 string toUser = GetUserIdByUserGroup("004", "008"); ;//生产组,制单人组
-                toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
+                toUser += GetSeOrderUserId(model.billNo); //业务员消息只发当前订单
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
                 WechatService.Send(toUser, "销售订单[" + model.billNo + "]工艺已回复", model.reason, noticeDetailUrl);
             }
@@ -787,7 +787,7 @@ namespace Goro.Check.Service
             if (msg == "OK")
             {
                 string toUser = GetUserIdByUserGroup("004", "008"); ;//生产组,制单人组
-                toUser += GetSeOrderUserId(model.billNo); //业务员消息只发自己的订单
+                toUser += GetSeOrderUserId(model.billNo); //业务员消息只发当前订单
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
                 WechatService.Send(toUser, "销售订单[" + model.billNo + "]供应已回复", model.reason, noticeDetailUrl);
             }
@@ -900,9 +900,13 @@ namespace Goro.Check.Service
 
             var rowCollection = res.AsEnumerable()
                 .Where(u => u["FUserOpenID"] != DBNull.Value)
-                .Select(u => u["FUserOpenID"]);
+                .Select(u => u["FUserOpenID"]).ToArray();
 
-            return string.Join("|", rowCollection);
+            string idStr = string.Join("|", rowCollection);
+
+            LoggerHelper.Info("根据用户分组获取用户绑定的微信openid:" + idStr);
+
+            return idStr;
         }
 
         /// <summary>
