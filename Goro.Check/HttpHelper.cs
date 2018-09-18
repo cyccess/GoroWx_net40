@@ -54,7 +54,6 @@ namespace Goro.Check
             StreamReader streamReader = new StreamReader(httpWebResponse.GetResponseStream());
             string responseContent = streamReader.ReadToEnd();
 
-            httpWebResponse.Close();
             streamReader.Close();
             httpWebRequest.Abort();
             httpWebResponse.Close();
@@ -63,34 +62,60 @@ namespace Goro.Check
         }
 
 
-
         public static string GetString(string requestUrl)
         {
-            ServicePointManager.ServerCertificateValidationCallback += RemoteCertificateValidate;
+            LoggerHelper.Info("requestUrl:" + requestUrl);
 
-            var request = (HttpWebRequest)WebRequest.Create(requestUrl);
-            request.Method = "GET";
-            var response = request.GetResponse();
-            string responseJson = "";
-            using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+            ServicePointManager.ServerCertificateValidationCallback += RemoteCertificateValidate;
+            ServicePointManager.DefaultConnectionLimit = 1000;
+            ServicePointManager.Expect100Continue = false;
+
+            HttpWebRequest request = null;
+
+            try
             {
+                request = (HttpWebRequest)WebRequest.Create(requestUrl);
+                request.Method = "GET";
+                request.UserAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 4.0.30319;)";
+                request.ProtocolVersion = HttpVersion.Version10;
+                request.Timeout = 5 * 1000; //一分钟超时
+
+                var response = request.GetResponse();
+                string responseJson = "";
+
+                StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
+
                 responseJson = reader.ReadToEnd();
+                LoggerHelper.Info("response:" + responseJson);
+
+                reader.Close();
+                request.Abort();
+                response.Close();
+
+                return responseJson;
+            }
+            catch (Exception)
+            {
+                if (request != null)
+                {
+                    request.Abort();
+                }
+                throw;
             }
 
-            return responseJson;
         }
 
         public static T Get<T>(string requestUrl)
         {
             try
             {
-                LoggerHelper.Info("requestUrl:" + requestUrl);
                 var responseJson = GetString(requestUrl);
                 //序列化
                 return JsonHelper.Deserialize<T>(responseJson);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                LoggerHelper.Info("Request Error:" + e);
                 return default(T);
             }
         }

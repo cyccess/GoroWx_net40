@@ -8,9 +8,15 @@ namespace Goro.Check.Service
 {
     public class MessageJob : IJob
     {
+        private readonly object _lock = new object();
+
         public void Execute()
         {
-            ApiService.SendNotice();
+            lock (_lock)
+            {
+                ApiService.SendNotice();
+            }
+           
         }
     }
 }

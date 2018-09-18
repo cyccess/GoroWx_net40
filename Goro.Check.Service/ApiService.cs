@@ -803,6 +803,8 @@ namespace Goro.Check.Service
                 SendNoticeToGM();
                 SendNoticeToPD();
                 SendNoticeToCSO();
+
+                LoggerHelper.Info("定时消息发送");
             }
             catch (Exception e)
             {

@@ -13,6 +13,11 @@ namespace Goro.Check.Web.Controllers
             apiService = new ApiService();
         }
 
+        [HttpGet]
+        public ActionResult Test()
+        {
+            return Json(new { meg = "success" }, JsonRequestBehavior.AllowGet);
+        }
 
         public ActionResult Login(string openId)
         {

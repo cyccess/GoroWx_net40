@@ -3,14 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web.Hosting;
 
 namespace Goro.Check.Service
 {
-    public class MessageRegistry : Registry
+   public class TokenJob : IJob
     {
-        public MessageRegistry()
+        public void Execute()
         {
-            Schedule<MessageJob>().ToRunNow().AndEvery(10).Seconds();
+            WechatService.RefreshAccessToken();
         }
     }
 }

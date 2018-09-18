@@ -36,7 +36,7 @@ namespace Goro.Check.Service
 
                 var accessToken = HttpHelper.Get<AccessToken>(url);
                 token = accessToken.access_token;
-                CacheService.Set("AccessToken", token, new TimeSpan(0, 30, 0));
+                CacheService.Set("AccessToken", token, new TimeSpan(1, 58, 0));
                 LoggerHelper.Info("重新获取AccessToken=" + token);
             }
 
@@ -54,11 +54,21 @@ namespace Goro.Check.Service
                 var token = CacheService.Get("AccessToken");
                 if (string.IsNullOrEmpty(token))
                 {
-                    string url = "https://" + "qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=" + WebConfig.CorpID + "&corpsecret=" + WebConfig.Secret;
-                    var accessToken = HttpHelper.Get<AccessToken>(url);
-                    token = accessToken.access_token;
-                    CacheService.Set("AccessToken", token, new TimeSpan(1, 45, 0));
-                    LoggerHelper.Info("获取AccessToken:" + token);
+                    RefreshAccessToken();
+
+                    token = CacheService.Get("AccessToken");
+                    //string url = "https://" + "qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=" + WebConfig.CorpID + "&corpsecret=" + WebConfig.Secret;
+                    //var accessToken = HttpHelper.Get<AccessToken>(url);
+
+                    //if (accessToken != null)
+                    //{
+                    //    if (accessToken.errcode == 0)
+                    //    {
+                    //        token = accessToken.access_token;
+                    //        CacheService.Set("AccessToken", token, new TimeSpan(1, 58, 0));
+                    //        LoggerHelper.Info("GetWrokAccessToken-获取AccessToken:" + token);
+                    //    }
+                    //}
                 }
 
                 return token;
@@ -67,6 +77,24 @@ namespace Goro.Check.Service
             {
                 LoggerHelper.Info("获取AccessToken出错:" + e);
                 return "";
+            }
+        }
+
+
+        public static void RefreshAccessToken()
+        {
+            LoggerHelper.Info("开始刷新AccessToken");
+            string url = "https://" + "qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=" + WebConfig.CorpID + "&corpsecret=" + WebConfig.Secret;
+            var accessToken = HttpHelper.Get<AccessToken>(url);
+
+            if (accessToken != null)
+            {
+                LoggerHelper.Info("AccessToken已刷新 code:" + accessToken.errcode);
+                if (accessToken.errcode == 0)
+                {
+                    CacheService.Set("AccessToken", accessToken.access_token, new TimeSpan(1, 59, 0));
+                    LoggerHelper.Info("AccessToken已刷新:" + accessToken.access_token);
+                }
             }
         }
 

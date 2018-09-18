@@ -21,6 +21,9 @@ namespace Goro.Check.Web.Controllers
 
             //string redirectUrl = "http://localhost:8003/#/?openId=cyccess";
             //return Redirect(redirectUrl);
+
+
+            //return RedirectToAction("WxRedirect");
         }
 
 

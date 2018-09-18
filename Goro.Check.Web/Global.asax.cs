@@ -37,7 +37,20 @@ namespace Goro.Check.Web
             CacheService.Init();
 
             // 定时消息
-            JobManager.Initialize(new MessageRegistry());
+            JobManager.Initialize(new MyRegistry());
+        }
+
+        protected void Application_End()
+        {
+            LoggerHelper.Info("进程即将被IIS回收");
+            LoggerHelper.Info("重新访问一个页面，以唤醒服务");
+
+            //var res = HttpHelper.GetString("http://wx.goro.com.cn/api/test");
+
+            //if (res != "")
+            //{
+            //    LoggerHelper.Info("唤醒程序成功");
+            //}
         }
 
         protected void Application_BeginRequest(object sender, EventArgs e)
