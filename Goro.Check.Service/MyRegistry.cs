@@ -11,7 +11,7 @@ namespace Goro.Check.Service
         public MyRegistry()
         {
             // 立即执行每1小时一次的计划任务
-            //Schedule<TokenJob>().ToRunNow().AndEvery(60).Minutes();
+            //Schedule<TokenJob>().ToRunNow().AndEvery(117).Minutes();
 
             Schedule<MessageJob>().NonReentrant().ToRunNow().AndEvery(10).Seconds();
 

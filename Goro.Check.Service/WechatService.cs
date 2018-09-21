@@ -11,6 +11,8 @@ namespace Goro.Check.Service
 {
     public static class WechatService
     {
+
+        private static object _accessTokenLock = new object();
         /// <summary> 
         /// 将c# DateTime时间格式转换为Unix时间戳格式 
         /// </summary> 
@@ -51,27 +53,17 @@ namespace Goro.Check.Service
         {
             try
             {
-                var token = CacheService.Get("AccessToken");
-                if (string.IsNullOrEmpty(token))
+                lock (_accessTokenLock)
                 {
-                    RefreshAccessToken();
+                    var token = CacheService.Get("AccessToken");
+                    if (string.IsNullOrEmpty(token))
+                    {
+                        RefreshAccessToken();
+                        token = CacheService.Get("AccessToken");
+                    }
 
-                    token = CacheService.Get("AccessToken");
-                    //string url = "https://" + "qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=" + WebConfig.CorpID + "&corpsecret=" + WebConfig.Secret;
-                    //var accessToken = HttpHelper.Get<AccessToken>(url);
-
-                    //if (accessToken != null)
-                    //{
-                    //    if (accessToken.errcode == 0)
-                    //    {
-                    //        token = accessToken.access_token;
-                    //        CacheService.Set("AccessToken", token, new TimeSpan(1, 58, 0));
-                    //        LoggerHelper.Info("GetWrokAccessToken-获取AccessToken:" + token);
-                    //    }
-                    //}
+                    return token;
                 }
-
-                return token;
             }
             catch (Exception e)
             {
