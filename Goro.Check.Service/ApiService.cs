@@ -536,7 +536,7 @@ namespace Goro.Check.Service
                     new SqlParameter{ ParameterName = "@PhoneNumber", Value = phoneNumber, SqlDbType = SqlDbType.NVarChar }
                 };
 
-                //退货通知单-根据手机号获取单号和客户
+                //销售订单-根据手机号获取单号和客户
                 var dt = SqlHelper.ExecuteDataTable(CommandType.StoredProcedure, "tm_p_GetSalesOrderList", sqlParameter);
 
                 int count = (page - 1) * 20;
@@ -657,6 +657,9 @@ namespace Goro.Check.Service
                 toUser += GetSeOrderUserId(model.billNo); //业务员消息只发当前订单
                 string title = "销售订单[" + model.billNo + "]已特批";
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
+
+                model.reason = ComposeMessageContent(model.billNo, model.reason);
+
                 WechatService.Send(toUser, title, model.reason, noticeDetailUrl);
 
                 if (model.result == "Y")
@@ -706,6 +709,8 @@ namespace Goro.Check.Service
                 string toUser = "";
                 string title = "";
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
+
+                model.reason = ComposeMessageContent(model.billNo, model.reason);
 
                 if (model.result == "Y")
                 {
@@ -761,6 +766,8 @@ namespace Goro.Check.Service
                 string toUser = GetUserIdByUserGroup("004", "008"); ;//生产组,制单人组
                 toUser += GetSeOrderUserId(model.billNo); //业务员消息只发当前订单
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
+                model.reason = ComposeMessageContent(model.billNo, model.reason);
+
                 WechatService.Send(toUser, "销售订单[" + model.billNo + "]工艺已回复", model.reason, noticeDetailUrl);
             }
 
@@ -789,6 +796,8 @@ namespace Goro.Check.Service
                 string toUser = GetUserIdByUserGroup("004", "008"); ;//生产组,制单人组
                 toUser += GetSeOrderUserId(model.billNo); //业务员消息只发当前订单
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + model.billNo;
+                model.reason = ComposeMessageContent(model.billNo, model.reason);
+
                 WechatService.Send(toUser, "销售订单[" + model.billNo + "]供应已回复", model.reason, noticeDetailUrl);
             }
             LoggerHelper.Info("销售订单[" + model.billNo + "]供应已回复：" + msg);
@@ -833,7 +842,9 @@ namespace Goro.Check.Service
                 string title = "您有销售订单[" + res.FBillNo + "]需要审核";
                 string desc = "由于" + res.FGMCheckCause + "需要审核";
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + res.FBillNo;
-                WechatService.Send(toUser, title, desc, noticeDetailUrl);
+                string content = ComposeMessageContent(res.FBillNo.ToString(), desc);
+
+                WechatService.Send(toUser, title, content, noticeDetailUrl);
             }
         }
 
@@ -854,7 +865,9 @@ namespace Goro.Check.Service
                 string toUser = GetUserIdByUserGroup("004"); // 生产组
                 string title = "您有销售订单[" + fBillNo + "]需要确认";
                 string noticeDetailUrl = WebConfig.WebHost + "/#/salesOrderDetail?billNo=" + fBillNo;
-                WechatService.Send(toUser, title, "", noticeDetailUrl);
+                string content = ComposeMessageContent(fBillNo.ToString(), null);
+
+                WechatService.Send(toUser, title, content, noticeDetailUrl);
             }
         }
 
@@ -927,6 +940,38 @@ namespace Goro.Check.Service
                 return "|" + userId.ToString();
 
             return "";
+        }
+
+        //发送通知消息，增加部门，物料名称内容
+        public static string ComposeMessageContent(string fBillNo, string reason)
+        {
+            SqlParameter[] sqlParameter = new SqlParameter[]
+            {
+                new SqlParameter("@FBillNo",fBillNo)
+            };
+
+            string sql = "select FName,FDeptName from tm_v_SeOrderList where FBillNo=@FBillNo";
+
+            var res = SqlHelper.ExecuteDataTable(CommandType.Text, sql, sqlParameter);
+
+            var orderInfo = res.AsEnumerable()
+                .Select(row => new SalesOrderInfo
+                {
+                    FName = row.Field<string>("FName"),
+                    FDeptName = row.Field<string>("FDeptName")
+                }).FirstOrDefault();
+
+            if (orderInfo == null) return reason;
+
+            string conent = "<div>部门：" + orderInfo.FDeptName + "</div>";
+            conent += "<div>物料：" + orderInfo.FName + "</div>";
+
+            if (!string.IsNullOrEmpty(reason))
+            {
+                conent += "<div>原因：" + reason + "</div>";
+            }
+
+            return conent;
         }
     }
 }

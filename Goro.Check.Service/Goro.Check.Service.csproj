@@ -49,6 +49,7 @@
     <Compile Include="JsTicket.cs" />
     <Compile Include="MessageJob.cs" />
     <Compile Include="MessageResult.cs" />
+    <Compile Include="Model\SalesOrderInfo.cs" />
     <Compile Include="MyRegistry.cs" />
     <Compile Include="Model\CreditViewModel.cs" />
     <Compile Include="Model\FieldDisplayed.cs" />
