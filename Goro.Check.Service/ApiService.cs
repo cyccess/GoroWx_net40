@@ -545,6 +545,8 @@ namespace Goro.Check.Service
                     FBillNo = r[0].ToString(),
                     FCustName = r[1].ToString(),
                     FType = r[2].ToString(),
+                    FName = r[3].ToString(),
+                    FDeptName = r[4].ToString()
                 }).Skip(count).Take(20).ToList();
 
                 int sn = count;
@@ -716,7 +718,7 @@ namespace Goro.Check.Service
                 {
                     toUser = GetUserIdByUserGroup("008");//制单人组
                     toUser += GetSeOrderUserId(model.billNo); //业务员消息只发当前订单
-                    title = "销售订单[" + model.billNo + "]已通过生产已确认";
+                    title = "销售订单[" + model.billNo + "]已通过生产确认";
                     WechatService.Send(toUser, title, model.reason, noticeDetailUrl);
                 }
                 else

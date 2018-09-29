@@ -104,7 +104,7 @@ namespace Goro.Check.Service
             {
                 title,
                 //支持使用br标签或者空格来进行换行处理
-                description = "<div class=\"gray\">" + now + "</div> <br><div>" + desc + "</div>",
+                description = "<div class=\"gray\">" + now + "</div> <br>" + desc,
                 url,
                 btntxt = "详情"
             };
