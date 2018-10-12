@@ -79,7 +79,8 @@
         <div @click="detail(index)" class="sales-item" v-for="(item,index) in list" :key="index">
           <div class="bill-no vux-1px-b">订单编号：{{item.fBillNo}}</div>
           <div class="custom">
-            <!--{{item.fCustName | hide}}-->
+            <div>部门:{{item.fDeptName}}</div>
+            <div>物料:{{item.fName}}</div>
           </div>
         </div>
       </div>

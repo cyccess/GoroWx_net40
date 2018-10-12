@@ -91,7 +91,7 @@ namespace Goro.Check.Service
                     new SqlParameter("@PageSize",model.page * pageSize)
                 };
 
-                string sql = "select ROW_NUMBER() over(order by FDate desc) rownumber, FBillNo,FCustName from tm_v_SEOrderQuery where 1=1";
+                string sql = "select ROW_NUMBER() over(order by FDate desc) rownumber, FBillNo,FCustName,FName,FDeptName from tm_v_SEOrderQuery where 1=1";
 
                 if (!string.IsNullOrEmpty(model.fBillNo))
                 {
@@ -155,8 +155,9 @@ namespace Goro.Check.Service
                 {
                     Id = Convert.ToInt32(row["rownumber"]),
                     FBillNo = row["FBillNo"].ToString(),
-                    FCustName = row["FCustName"].ToString()
-
+                    FCustName = row["FCustName"].ToString(),
+                    FName = row["FName"].ToString(),
+                    FDeptName = row["FDeptName"].ToString()
                 }).ToList();
 
                 return list;
@@ -544,9 +545,9 @@ namespace Goro.Check.Service
                 {
                     FBillNo = r[0].ToString(),
                     FCustName = r[1].ToString(),
-                    FType = r[2].ToString(),
-                    FName = r[3].ToString(),
-                    FDeptName = r[4].ToString()
+                    FName = r[2].ToString(),
+                    FDeptName = r[3].ToString(),
+                    FType = r[4].ToString()
                 }).Skip(count).Take(20).ToList();
 
                 int sn = count;

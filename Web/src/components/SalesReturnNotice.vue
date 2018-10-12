@@ -61,6 +61,13 @@
         }
       },
       detail(index) {
+        this.$vux.toast.show({
+          type:'text',
+          text:'系统试用即将到期，请联系管理员',
+          time:5000,
+          position:'top',
+          width:'20rem'
+        });
         let fBillNo = this.list[index].fBillNo;
         this.$router.push({path: '/salesReturnNoticeDetail', query: {billNo: fBillNo}});
       }

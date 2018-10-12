@@ -12,15 +12,15 @@ namespace Goro.Check.Web.Controllers
     {
         public ActionResult Index()
         {
-            string reurl = Server.UrlEncode(WebConfig.WebHost + "/Authorize/WxRedirect");
+            //string reurl = Server.UrlEncode(WebConfig.WebHost + "/Authorize/WxRedirect");
 
-            string url = "https://" + "open.weixin.qq.com/connect/oauth2/authorize?appid=" + WebConfig.CorpID + "&redirect_uri=" + reurl + "&response_type=code&scope=snsapi_base&agentid=" + WebConfig.AgentId + "&state=STATE#wechat_redirect";
+            //string url = "https://" + "open.weixin.qq.com/connect/oauth2/authorize?appid=" + WebConfig.CorpID + "&redirect_uri=" + reurl + "&response_type=code&scope=snsapi_base&agentid=" + WebConfig.AgentId + "&state=STATE#wechat_redirect";
 
-            return Redirect(url);
+            //return Redirect(url);
 
 
-            //string redirectUrl = "http://localhost:8003/#/?openId=cyccess";
-            //return Redirect(redirectUrl);
+            string redirectUrl = "http://localhost:8003/#/?openId=cyccess";
+            return Redirect(redirectUrl);
 
 
             //return RedirectToAction("WxRedirect");

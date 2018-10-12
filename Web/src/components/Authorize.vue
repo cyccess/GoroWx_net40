@@ -25,8 +25,12 @@
 
         // 如果本地没有授权信息，并且不是获取授权后跳转到此页面的，将跳转进行授权操作
         if (!window.localStorage.getItem('openid') && !this.openId) {
-          // window.location.href = "http://localhost:8002/Authorize";
-          window.location.href = "/Authorize";
+          if(process.env.NODE_ENV === "development"){
+            window.location.href = "http://localhost:8002/Authorize";
+          }
+          else{
+            window.location.href = "/Authorize";
+          }
           return;
         }
 
