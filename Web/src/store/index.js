@@ -8,7 +8,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     openId: '',
-    userInfo: null
+    userInfo: null,
+    permission: false,
   },
   mutations
 });

@@ -28,7 +28,7 @@ export default [
     meta: {title: '销售订单', requiresAuth: true}
   }, {
     path: '/salesOrderDetail',
-    name: 'salesOrder',
+    name: 'salesOrderDetail',
     component: resolve => require(['@/components/SalesOrderDetail.vue'], resolve),
     meta: {title: '销售订单详情', requiresAuth: true}
   }, {
