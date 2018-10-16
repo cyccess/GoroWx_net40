@@ -73,8 +73,6 @@ Vue.filter("hide", (customName) => {
   return customName.replace(reg, '$1****$2');
 });
 
-import {validate} from './permission'
-
 router.beforeEach((to, from, next) => {
   let openId = store.state.openId;
   if (to.meta.requiresAuth && !openId) {
@@ -84,7 +82,6 @@ router.beforeEach((to, from, next) => {
     });
   }
   else {
-     validate();
      window.document.title = to.meta.title;
      next();
   }

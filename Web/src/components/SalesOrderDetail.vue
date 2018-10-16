@@ -167,11 +167,6 @@
         await this.update("N");
       },
       async update(result) {
-        if(this.$store.state.permission){
-          this.$vux.toast.text('系统试用已到期，请联系管理员', 'top');
-          return;
-        }
-
         let args = {
           billNo: this.billNo,
           phoneNumber: this.userInfo.fPhoneNumber,
