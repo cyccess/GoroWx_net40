@@ -616,13 +616,13 @@ namespace Goro.Check.Service
                 switch (model.userGroupNumber)
                 {
                     case "002":
-                        return UpdateSalesOrderGM(model);
+                        return UpdateSalesOrderGM(model); // 总经理
                     case "004":
-                        return UpdateSalesOrderPD(model);
+                        return UpdateSalesOrderPD(model); // 生产
                     case "005":
-                        return UpdateSalesOrderME(model);
+                        return UpdateSalesOrderME(model); // 工艺
                     case "006":
-                        return UpdateSalesOrderPO(model);
+                        return UpdateSalesOrderPO(model); // 供应
                     default:
                         LoggerHelper.Info("销售单审核：用户分组未找到" + model.userGroupNumber);
                         return "用户分组未找到！";

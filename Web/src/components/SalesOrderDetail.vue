@@ -21,7 +21,7 @@
 
     <div class="btnGroup">
       <!--总经理组审核按钮-->
-      <div class="btn-wrapper" v-if="userGroupNumber==='002'">
+      <div class="btn-wrapper" v-if="userGroupNumber==='002'&&model['fGMResult']!=='Y'">
         <button @click="modalShow=true" class="btn btn-secondary" type="submit">不同意</button>
         <button @click="agree" class="btn btn-primary" type="submit">同意</button>
       </div>
