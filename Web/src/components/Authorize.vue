@@ -4,7 +4,7 @@
 
 <script>
   import {mapMutations} from 'vuex'
-  import {setStore, getStore} from "../utils"
+  import {setStore, getStore, removeStore} from "../utils"
 
   export default {
     data() {
@@ -25,10 +25,10 @@
 
         // 如果本地没有授权信息，并且不是获取授权后跳转到此页面的，将跳转进行授权操作
         if (!window.localStorage.getItem('openid') && !this.openId) {
-          if(process.env.NODE_ENV === "development"){
+          if (process.env.NODE_ENV === "development") {
             window.location.href = "http://localhost:8002/Authorize";
           }
-          else{
+          else {
             window.location.href = "/Authorize";
           }
           return;
@@ -51,6 +51,7 @@
         let path = getStore("redirect");
         console.log("path:" + path);
         if (path) {
+          removeStore('redirect');
           this.$router.replace(path);
         }
       }
